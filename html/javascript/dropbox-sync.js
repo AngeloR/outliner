@@ -77,7 +77,7 @@ DropboxSync.prototype.isActive = function() {
 }
 
 DropboxSync.prototype.activate = function() {
-  let authUrl = this.dbx.getAuthenticationUrl('http://localhost:8080/');
+  let authUrl = this.dbx.getAuthenticationUrl('https://fargo.dev.xangelo.ca/');
   $('#authDropbox').on('click', function(e){
     window.location = authUrl;
   });
