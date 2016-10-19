@@ -35,7 +35,7 @@
   };
 })(window);
 
-function DropboxSync() {
+function DropboxSync(cb) {
   let params = {};
   this.ACCESS_TOKEN = localStorage.accessToken || '';
   if(!this.ACCESS_TOKEN.length) {
@@ -49,7 +49,28 @@ function DropboxSync() {
 
   this.dbx = new Dropbox(params);
 
-  this.setActive();
+  this.setActive(cb);
+}
+
+DropboxSync.prototype.load = function(name, callback) {
+  if(this.isActive()) {
+    let path = '/' + name + '.opml';
+
+    $.ajax({
+      method: 'post',
+      url: 'https://content.dropboxapi.com/2/files/download',
+      headers: {
+        'Authorization': 'Bearer ' + this.ACCESS_TOKEN,
+        'Dropbox-API-Arg': '{"path":"'+path+'"}'
+      },
+      success: function(data) {
+        callback(null, data);
+      },
+      error: function(jqXHR, status, err) {
+        callback(err);
+      }
+    });
+  }
 }
 
 DropboxSync.prototype.setActive = function() {
@@ -59,7 +80,6 @@ DropboxSync.prototype.setActive = function() {
       this.ACCESS_TOKEN = access_token;
       this.dbx.setAccessToken(this.ACCESS_TOKEN);
       localStorage.accessToken = this.ACCESS_TOKEN;
-      this.active = true;
     }
     else {
       this.ACCESS_TOKEN = '';
