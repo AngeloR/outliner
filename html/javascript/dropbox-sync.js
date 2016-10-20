@@ -104,7 +104,7 @@ DropboxSync.prototype.activate = function() {
   $('#welcomeModal').modal();
 }
 
-DropboxSync.prototype.save = function(name, data) {
+DropboxSync.prototype.save = function(name, data, cb) {
   let path = '/' + name + '.opml';
   var blob = new Blob([data], {
     type: 'application/xml'
@@ -116,9 +116,8 @@ DropboxSync.prototype.save = function(name, data) {
       '.tag': 'overwrite'
     }
   }).then(function(response) {
-      console.log(response);
+    cb(null, response);
   }).catch(function(e){
-    console.error(error);
-    alert('Error saving to dropbox');
+    cb(e);
   });
 }
