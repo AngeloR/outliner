@@ -219,7 +219,7 @@
                     setOutlinerPrefs ("#outliner", true, false);
                     opSetFont (appPrefs.outlineFont, appPrefs.outlineFontSize, appPrefs.outlineLineHeight); 
                     opXmlToOutline (localStorage.savedOpmltext);
-                    self.setInterval (function () {backgroundProcess ()}, 1000); //call every second
+                    self.setInterval (function () {backgroundProcess ()}, 3000); //call every second
                 }
             }
         </script>
