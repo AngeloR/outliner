@@ -190,8 +190,40 @@
 
                 function backgroundProcess () {
                     if (opHasChanged ()) {
-                        if (secondsSince (whenLastKeystroke) >= 1) { 
-                            saveOutlineNow ();
+                        var seconds = secondsSince(whenLastKeystroke);
+                        if (seconds >= 1) { 
+                            if(seconds >= 60 * 60) {
+                                // it's been over 1 hour, lets attempt a resync
+                                dropboxSync.resync(seconds, 'outline', function(err, shouldResync){
+                                    if(err) {
+                                        return console.error(err);
+                                    }
+
+                                    if(shouldResync) {
+                                        let answer = confirm('Outline has been modified outside of this tool. Resync from server?');
+                                        if(answer) {
+                                            dropboxSync.load('outline', function(err, response){
+                                                if(err) {
+                                                    return console.error(err);
+                                                }
+
+                                                localStorage.savedOpmltext = response;
+                                                opXmlToOutline(localStorage.savedOpmltext);
+
+                                            });
+                                        }
+                                        else {
+                                            // they don't want to resync, so 
+                                            // we reset the cleared var until 
+                                            // they make another change
+                                            opClearChanged();
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                saveOutlineNow ();
+                            }
                         }
                     }
                 }

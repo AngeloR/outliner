@@ -104,6 +104,25 @@ DropboxSync.prototype.activate = function() {
   $('#welcomeModal').modal();
 }
 
+DropboxSync.prototype.resync = function(lastSaved, name, cb) {
+  let path = '/' + name + '.opml';
+  this.dbx.filesGetMetadata({
+    path: path
+  }).then(function(response){
+    let lastModified = new Date(response.client_modified).getTime();
+    let now = new Date().getTime();
+
+    if((now - lastSaved) >= lastModified) {
+      return cb(null, true);
+    }
+    else {
+      return cb(null, false);
+    }
+  }).catch(function(err) {
+    return cb(err, false);
+  });
+}
+
 DropboxSync.prototype.save = function(name, data, cb) {
   let path = '/' + name + '.opml';
   var blob = new Blob([data], {
