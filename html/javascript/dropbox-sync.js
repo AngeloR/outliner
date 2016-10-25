@@ -123,6 +123,10 @@ DropboxSync.prototype.resync = function(lastSaved, name, cb) {
   });
 }
 
+DropboxSync.prototype.lastSaveTime = function() {
+  return localStorage.lastSaveTime;
+}
+
 DropboxSync.prototype.save = function(name, data, cb) {
   let path = '/' + name + '.opml';
   var blob = new Blob([data], {
@@ -134,7 +138,8 @@ DropboxSync.prototype.save = function(name, data, cb) {
     mode: {
       '.tag': 'overwrite'
     }
-  }).then(function(response) {
+  }).then((response) => {
+    localStorage.lastSaveTime = Date.now();
     cb(null, response);
   }).catch(function(e){
     cb(e);
