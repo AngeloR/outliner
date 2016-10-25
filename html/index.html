@@ -307,17 +307,8 @@
                     opClearChanged ();
                     dropboxSync.save(localStorage.currentFile, doc, function(err){
                         app.emit('cmd.file.save', null, [err, doc]);
-                        if(err) {
-                            if(cb) {
-                                return cb(err);
-                            }
-                            return;
-                        }
-
-
-                        console.log ("saveOutlineNow: " + doc.length + " chars.");
-                        if(cb) { 
-                            cb();
+                        if(cb) {
+                            return cb(err, doc);
                         }
                     });
                 }
