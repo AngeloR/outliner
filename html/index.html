@@ -48,6 +48,10 @@
                     if (localStorage.flTextMode == undefined) {
                         localStorage.flTextMode = "true";
                     }
+
+                    if(localStorage.currentFile === undefined) {
+                        localStorage.currentFile = 'outline';
+                    }
                 }
 
                 function setInclude () { //used to test includes
@@ -174,7 +178,7 @@
                     let doc = opOutlineToXml(appPrefs.authorName, appPrefs.authorEmail);
                     localStorage.ctOpmlSaves++;
                     opClearChanged ();
-                    dropboxSync.save('outline', doc, function(err){
+                    dropboxSync.save(localStorage.currentFile, doc, function(err){
                         if(err) {
                             alert('Error, saving to dropbox. Saved locally temporarily');
                             return;
@@ -191,7 +195,7 @@
                         if (seconds >= 1) { 
                             if(Date.now() - dropboxSync.lastSaveTime() >= saveWindow) {
                                 // it's been over 1 hour, lets attempt a resync
-                                dropboxSync.resync(seconds, 'outline', function(err, shouldResync){
+                                dropboxSync.resync(seconds, localStorage.currentFile, function(err, shouldResync){
                                     if(err) {
                                         return console.error(err);
                                     }
@@ -199,7 +203,7 @@
                                     if(shouldResync) {
                                         let answer = confirm('Outline has been modified outside of this tool. Resync from server?');
                                         if(answer) {
-                                            dropboxSync.load('outline', function(err, response){
+                                            dropboxSync.load(localStorage.currentFile, function(err, response){
                                                 if(err) {
                                                     return console.error(err);
                                                 }
@@ -225,10 +229,6 @@
                 }
 
                 function startup (initialOpmlText) {
-                    // we set the initial opml text to ensure that 
-                    // our local cache is primed
-                    initLocalStorage ();
-
                     $("#idMenuProductName").text (appConsts.productnameForDisplay);
                     $("#idProductVersion").text ("v" + appConsts.version);
 
@@ -400,8 +400,9 @@
         </div>
         <script>
         $(document).ready (function () {
+            initLocalStorage();
             if(dropboxSync.isActive()) {
-                dropboxSync.load('outline', function(err, response){
+                dropboxSync.load(localStorage.currentFile, function(err, response){
                     startup(response);
                 });
             }
