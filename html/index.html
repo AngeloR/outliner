@@ -391,7 +391,7 @@
             }
 
         $(document).ready (function () {
-            app.on('cmd.file.list', function(scope, e) {
+            app.on('cmd.file.list', function(e) {
                 e.preventDefault();
                 let filename = prompt('Please enter a filename to open');
                 if(!filename) {

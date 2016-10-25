@@ -62,10 +62,10 @@ App.prototype.on = function(event, handler) {
   this.events[event].push(handler);
 }
 
-App.prototype.emit = function(event, scope, eventObject) {
+App.prototype.emit = function(event, scope, argArray) {
   if(this.events.hasOwnProperty(event)) {
     this.events[event].forEach((handler) => {
-      handler(scope, eventObject);
+      handler.apply(scope, argArray);
     });
   }
 }
