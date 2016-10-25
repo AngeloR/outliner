@@ -36,11 +36,7 @@
                 var flReadOnly = false, flRenderMode = false;
                 var cmdKeyPrefix = "Ctrl+"; 
 
-                function initLocalStorage (initialOpmltext) {
-                    if (localStorage.savedOpmltext == undefined) {
-                        localStorage.savedOpmltext = initialOpmltext;
-                    }
-
+                function initLocalStorage () {
                     if (localStorage.ctOpmlSaves == undefined) {
                         localStorage.ctOpmlSaves = 0;
                     }
@@ -175,16 +171,16 @@
                 }
 
                 function saveOutlineNow () {
-                    localStorage.savedOpmltext = opOutlineToXml (appPrefs.authorName, appPrefs.authorEmail);
+                    let doc = opOutlineToXml(appPrefs.authorName, appPrefs.authorEmail);
                     localStorage.ctOpmlSaves++;
                     opClearChanged ();
-                    dropboxSync.save('outline', localStorage.savedOpmltext, function(err){
+                    dropboxSync.save('outline', doc, function(err){
                         if(err) {
                             alert('Error, saving to dropbox. Saved locally temporarily');
                             return;
                         }
 
-                        console.log ("saveOutlineNow: " + localStorage.savedOpmltext.length + " chars.");
+                        console.log ("saveOutlineNow: " + doc.length + " chars.");
                     });
                 }
 
@@ -208,8 +204,7 @@
                                                     return console.error(err);
                                                 }
 
-                                                localStorage.savedOpmltext = response;
-                                                opXmlToOutline(localStorage.savedOpmltext);
+                                                opXmlToOutline(response);
 
                                             });
                                         }
@@ -232,7 +227,7 @@
                 function startup (initialOpmlText) {
                     // we set the initial opml text to ensure that 
                     // our local cache is primed
-                    initLocalStorage (initialOpmlText);
+                    initLocalStorage ();
 
                     $("#idMenuProductName").text (appConsts.productnameForDisplay);
                     $("#idProductVersion").text ("v" + appConsts.version);
@@ -251,7 +246,7 @@
 
                     setOutlinerPrefs ("#outliner", true, false);
                     opSetFont (appPrefs.outlineFont, appPrefs.outlineFontSize, appPrefs.outlineLineHeight); 
-                    opXmlToOutline (localStorage.savedOpmltext);
+                    opXmlToOutline (initialOpmlText);
                     self.setInterval (function () {backgroundProcess ()}, 3000); //call every second
                 }
             }
