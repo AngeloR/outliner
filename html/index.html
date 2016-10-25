@@ -181,24 +181,6 @@
                 var flReadOnly = false, flRenderMode = false;
                 var cmdKeyPrefix = "Ctrl+"; 
 
-                function initLocalStorage () {
-                    if (localStorage.ctOpmlSaves == undefined) {
-                        localStorage.ctOpmlSaves = 0;
-                    }
-
-                    if (localStorage.whenLastSave == undefined) {
-                        localStorage.whenLastSave = new Date ().toString ();
-                    }
-
-                    if (localStorage.flTextMode == undefined) {
-                        localStorage.flTextMode = "true";
-                    }
-
-                    if(localStorage.currentFile === undefined) {
-                        localStorage.currentFile = 'outline';
-                    }
-                }
-
                 function setInclude () { //used to test includes
                     opSetOneAtt ("type", "include");
                     opSetOneAtt ("url", "http://smallpicture.com/states.opml");
@@ -430,7 +412,6 @@
                 });
             });
 
-            initLocalStorage();
             if(dropboxSync.isActive()) {
                 dropboxSync.load(localStorage.currentFile, function(err, response){
                     startup(response);

@@ -20,6 +20,7 @@ function App() {
   };
 
   this.bindDefaultEvents();
+  this.initializeStorage(localStorage);
 }
 
 App.prototype.bindDefaultEvents = function() {
@@ -30,6 +31,24 @@ App.prototype.bindDefaultEvents = function() {
       self.emit($(this).attr('data-event'), this, e);
     });
   });
+}
+
+App.prototype.initializeStorage = function(storage) {
+  if (storage.ctOpmlSaves == undefined) {
+      storage.ctOpmlSaves = 0;
+  }
+
+  if (storage.whenLastSave == undefined) {
+      storage.whenLastSave = new Date ().toString ();
+  }
+
+  if (storage.flTextMode == undefined) {
+      storage.flTextMode = "true";
+  }
+
+  if(storage.currentFile === undefined) {
+      storage.currentFile = 'outline';
+  }
 }
 
 App.prototype.on = function(event, handler) {
