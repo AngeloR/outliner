@@ -49,6 +49,9 @@ App.prototype.initializeStorage = function(storage) {
   if(storage.currentFile === undefined) {
       storage.currentFile = 'outline';
   }
+
+  // reset the last save time!
+  storage.lastSaveTime = Date.now();
 }
 
 App.prototype.on = function(event, handler) {
