@@ -193,7 +193,7 @@
                     if (opHasChanged ()) {
                         var seconds = secondsSince(whenLastKeystroke);
                         if (seconds >= 1) { 
-                            if(Date.now() - dropboxSync.stats.lastSaveTime >= saveWindow) {
+                            if(Date.now() - dropboxSync.lastSaveTime() >= saveWindow) {
                                 // it's been over 1 hour, lets attempt a resync
                                 dropboxSync.resync(seconds, 'outline', function(err, shouldResync){
                                     if(err) {

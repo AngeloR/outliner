@@ -48,9 +48,6 @@ function DropboxSync(cb) {
   }
 
   this.dbx = new Dropbox(params);
-  this.stats = {
-    lastSaveTime: undefined
-  };
 
   this.setActive(cb);
 }
@@ -126,6 +123,10 @@ DropboxSync.prototype.resync = function(lastSaved, name, cb) {
   });
 }
 
+DropboxSync.prototype.lastSaveTime = function() {
+  return localStorage.lastSaveTime;
+}
+
 DropboxSync.prototype.save = function(name, data, cb) {
   let path = '/' + name + '.opml';
   var blob = new Blob([data], {
@@ -138,7 +139,7 @@ DropboxSync.prototype.save = function(name, data, cb) {
       '.tag': 'overwrite'
     }
   }).then((response) => {
-    this.stats.lastSaveTime = Date.now();
+    localStorage.lastSaveTime = Date.now();
     cb(null, response);
   }).catch(function(e){
     cb(e);
