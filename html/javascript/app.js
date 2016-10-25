@@ -1,4 +1,20 @@
 function App() {
+  this.settings = {
+    productname: 'far2go',
+    productnameForDisplay: 'Far2Go',
+    domain: 'localhost',
+    version: 1.0
+  };
+
+  this.userPreferences = {
+    outlineFont: 'Arial',
+    outlineFontSize: 16,
+    outlineLineHeight: 24,
+    authorName: '',
+    authorEmail: '',
+    autosaveDelay: 3 // defined in seconds
+  };
+
   this.events = {
     'cmd.file.list': []
   };
