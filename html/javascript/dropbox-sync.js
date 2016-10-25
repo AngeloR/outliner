@@ -48,6 +48,9 @@ function DropboxSync(cb) {
   }
 
   this.dbx = new Dropbox(params);
+  this.stats = {
+    lastSaveTime: undefined
+  };
 
   this.setActive(cb);
 }
@@ -134,7 +137,8 @@ DropboxSync.prototype.save = function(name, data, cb) {
     mode: {
       '.tag': 'overwrite'
     }
-  }).then(function(response) {
+  }).then((response) => {
+    this.stats.lastSaveTime = Date.now();
     cb(null, response);
   }).catch(function(e){
     cb(e);
