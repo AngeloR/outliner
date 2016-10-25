@@ -16,6 +16,7 @@
         <script src="/javascript/dropbox-sync.js"></script>
         <script src="/javascript/concord.js"></script>
         <script src="/javascript/concordUtils.js"></script>
+        <script src="/javascript/app.js"></script>
         <!-- /scripts -->
 
         <script>
@@ -174,17 +175,23 @@
 
                 }
 
-                function saveOutlineNow () {
+                function saveOutlineNow (cb) {
                     let doc = opOutlineToXml(appPrefs.authorName, appPrefs.authorEmail);
                     localStorage.ctOpmlSaves++;
                     opClearChanged ();
                     dropboxSync.save(localStorage.currentFile, doc, function(err){
                         if(err) {
                             alert('Error, saving to dropbox. Saved locally temporarily');
+                            if(cb) {
+                                return cb(err);
+                            }
                             return;
                         }
 
                         console.log ("saveOutlineNow: " + doc.length + " chars.");
+                        if(cb) { 
+                            cb();
+                        }
                     });
                 }
 
@@ -329,7 +336,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a onclick="app.showFileList();">Open</a></li>
+                            <li><a class="command" data-event="cmd.file.list">Open</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -406,6 +413,28 @@
         </div>
         <script>
         $(document).ready (function () {
+            var app = new App();
+            app.on('cmd.file.list', function(scope, e) {
+                e.preventDefault();
+                let filename = prompt('Please enter a filename to open');
+                if(!filename) {
+                    return;
+                }
+                saveOutlineNow(function(err){
+                    if(err) {
+                        return;
+                    }
+                    dropboxSync.load(filename, function(err, response) {
+                        if(err) {
+                            return console.error(err);
+                        }
+
+                        localStorage.currentFile = filename;
+                        opXmlToOutline (response);
+                    });
+                });
+            });
+
             initLocalStorage();
             if(dropboxSync.isActive()) {
                 dropboxSync.load(localStorage.currentFile, function(err, response){
