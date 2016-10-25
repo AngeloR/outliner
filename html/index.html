@@ -16,6 +16,7 @@
         <script src="/javascript/dropbox-sync.js"></script>
         <script src="/javascript/concord.js"></script>
         <script src="/javascript/concordUtils.js"></script>
+        <script src="/javascript/app.js"></script>
         <!-- /scripts -->
 
         <script>
@@ -47,6 +48,10 @@
 
                     if (localStorage.flTextMode == undefined) {
                         localStorage.flTextMode = "true";
+                    }
+
+                    if(localStorage.currentFile === undefined) {
+                        localStorage.currentFile = 'outline';
                     }
                 }
 
@@ -170,17 +175,23 @@
 
                 }
 
-                function saveOutlineNow () {
+                function saveOutlineNow (cb) {
                     let doc = opOutlineToXml(appPrefs.authorName, appPrefs.authorEmail);
                     localStorage.ctOpmlSaves++;
                     opClearChanged ();
-                    dropboxSync.save('outline', doc, function(err){
+                    dropboxSync.save(localStorage.currentFile, doc, function(err){
                         if(err) {
                             alert('Error, saving to dropbox. Saved locally temporarily');
+                            if(cb) {
+                                return cb(err);
+                            }
                             return;
                         }
 
                         console.log ("saveOutlineNow: " + doc.length + " chars.");
+                        if(cb) { 
+                            cb();
+                        }
                     });
                 }
 
@@ -191,7 +202,7 @@
                         if (seconds >= 1) { 
                             if(Date.now() - dropboxSync.lastSaveTime() >= saveWindow) {
                                 // it's been over 1 hour, lets attempt a resync
-                                dropboxSync.resync(seconds, 'outline', function(err, shouldResync){
+                                dropboxSync.resync(seconds, localStorage.currentFile, function(err, shouldResync){
                                     if(err) {
                                         return console.error(err);
                                     }
@@ -199,7 +210,7 @@
                                     if(shouldResync) {
                                         let answer = confirm('Outline has been modified outside of this tool. Resync from server?');
                                         if(answer) {
-                                            dropboxSync.load('outline', function(err, response){
+                                            dropboxSync.load(localStorage.currentFile, function(err, response){
                                                 if(err) {
                                                     return console.error(err);
                                                 }
@@ -225,10 +236,6 @@
                 }
 
                 function startup (initialOpmlText) {
-                    // we set the initial opml text to ensure that 
-                    // our local cache is primed
-                    initLocalStorage ();
-
                     $("#idMenuProductName").text (appConsts.productnameForDisplay);
                     $("#idProductVersion").text ("v" + appConsts.version);
 
@@ -327,6 +334,12 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a class="command" data-event="cmd.file.list">Open</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Outliner <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a onclick="opExpand ();">Expand <kbd>⌘ -</kbd></a></li>
@@ -400,8 +413,31 @@
         </div>
         <script>
         $(document).ready (function () {
+            var app = new App();
+            app.on('cmd.file.list', function(scope, e) {
+                e.preventDefault();
+                let filename = prompt('Please enter a filename to open');
+                if(!filename) {
+                    return;
+                }
+                saveOutlineNow(function(err){
+                    if(err) {
+                        return;
+                    }
+                    dropboxSync.load(filename, function(err, response) {
+                        if(err) {
+                            return console.error(err);
+                        }
+
+                        localStorage.currentFile = filename;
+                        opXmlToOutline (response);
+                    });
+                });
+            });
+
+            initLocalStorage();
             if(dropboxSync.isActive()) {
-                dropboxSync.load('outline', function(err, response){
+                dropboxSync.load(localStorage.currentFile, function(err, response){
                     startup(response);
                 });
             }
