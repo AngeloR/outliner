@@ -189,10 +189,11 @@
                 }
 
                 function backgroundProcess () {
+                    const saveWindow = 1000 * 60 * 60;
                     if (opHasChanged ()) {
                         var seconds = secondsSince(whenLastKeystroke);
                         if (seconds >= 1) { 
-                            if(seconds >= 60 * 60) {
+                            if(Date.now() - dropboxSync.stats.lastSaveTime >= saveWindow) {
                                 // it's been over 1 hour, lets attempt a resync
                                 dropboxSync.resync(seconds, 'outline', function(err, shouldResync){
                                     if(err) {
