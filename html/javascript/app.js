@@ -31,6 +31,10 @@ App.prototype.bindDefaultEvents = function() {
       self.emit($(this).attr('data-event'), this, e);
     });
   });
+
+  setInterval(() => {
+    this.emit('tick');
+  }, this.userPreferences.autosaveDelay * 1000);
 }
 
 App.prototype.initializeStorage = function(storage) {

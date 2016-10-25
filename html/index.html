@@ -306,13 +306,14 @@
                     localStorage.ctOpmlSaves++;
                     opClearChanged ();
                     dropboxSync.save(localStorage.currentFile, doc, function(err){
+                        app.emit('cmd.file.save', null, [err, doc]);
                         if(err) {
-                            alert('Error, saving to dropbox. Saved locally temporarily');
                             if(cb) {
                                 return cb(err);
                             }
                             return;
                         }
+
 
                         console.log ("saveOutlineNow: " + doc.length + " chars.");
                         if(cb) { 
@@ -355,7 +356,7 @@
                                 });
                             }
                             else {
-                                saveOutlineNow ();
+                                saveOutlineNow();
                             }
                         }
                     }
@@ -383,10 +384,7 @@
                             app.userPreferences.outlineFontSize, 
                             app.userPreferences.outlineLineHeight); 
                     opXmlToOutline (initialOpmlText);
-                    self.setInterval(function () {
-                            backgroundProcess ()
-                        }, 
-                        app.userPreferences.autosaveDelay * 1000); 
+                    app.on('tick', backgroundProcess);
                 }
             }
 
@@ -407,9 +405,17 @@
                         }
 
                         localStorage.currentFile = filename;
-                        opXmlToOutline (response);
+                        opXmlToOutline(response);
                     });
                 });
+            });
+
+            app.on('cmd.file.save', function(err, doc) {
+                if(err) {
+                    return console.error(err);
+                }
+
+                console.log('Saved ' + doc.length + ' characters');
             });
 
             if(dropboxSync.isActive()) {
