@@ -315,7 +315,7 @@
                     });
                 }
 
-                function backgroundProcess () {
+                function autosave () {
                     const saveWindow = 1000 * 60 * 60;
                     if (opHasChanged ()) {
                         var seconds = secondsSince(whenLastKeystroke);
@@ -378,7 +378,7 @@
                             app.userPreferences.outlineFontSize, 
                             app.userPreferences.outlineLineHeight); 
                     opXmlToOutline (initialOpmlText);
-                    app.on('tick', backgroundProcess);
+                    app.on('tick', autosave);
                 }
             }
 
