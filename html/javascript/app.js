@@ -15,21 +15,15 @@ function App() {
     autosaveDelay: 3 // defined in seconds
   };
 
-  this.events = {
-    'cmd.file.list': []
-  };
-
+  this.events = {};
   this.bindDefaultEvents();
   this.initializeStorage(localStorage);
 }
 
 App.prototype.bindDefaultEvents = function() {
   const self = this;
-  Object.keys(this.events).forEach((event) => {
-    let selector = '.command[data-event="'+event+'"]';
-    $(selector).on('click', function eventHandler(e) {
-      self.emit($(this).attr('data-event'), this, e);
-    });
+  $('body').on('click', '.command', function eventHandle(e){
+    self.emit($(this).attr('data-event'), this, [e]);
   });
 
   setInterval(() => {

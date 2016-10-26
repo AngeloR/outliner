@@ -17,6 +17,7 @@
         <script src="/javascript/concord.js"></script>
         <script src="/javascript/concordUtils.js"></script>
         <script src="/javascript/app.js"></script>
+        <script src="/javascript/hooks.js"></script>
         <!-- /scripts -->
 
 
@@ -97,6 +98,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                            <li><a class="command" data-event="cmd.file.create">Create</a></li>
                             <li><a class="command" data-event="cmd.file.list">Open</a></li>
                         </ul>
                     </li>
@@ -313,7 +315,7 @@
                     });
                 }
 
-                function backgroundProcess () {
+                function autosave () {
                     const saveWindow = 1000 * 60 * 60;
                     if (opHasChanged ()) {
                         var seconds = secondsSince(whenLastKeystroke);
@@ -376,40 +378,12 @@
                             app.userPreferences.outlineFontSize, 
                             app.userPreferences.outlineLineHeight); 
                     opXmlToOutline (initialOpmlText);
-                    app.on('tick', backgroundProcess);
+                    app.on('tick', autosave);
                 }
             }
 
         $(document).ready (function () {
-            app.on('cmd.file.list', function(e) {
-                e.preventDefault();
-                let filename = prompt('Please enter a filename to open');
-                if(!filename) {
-                    return;
-                }
-                saveOutlineNow(function(err){
-                    if(err) {
-                        return;
-                    }
-                    dropboxSync.load(filename, function(err, response) {
-                        if(err) {
-                            return console.error(err);
-                        }
-
-                        localStorage.currentFile = filename;
-                        opXmlToOutline(response);
-                    });
-                });
-            });
-
-            app.on('cmd.file.save', function(err, doc) {
-                if(err) {
-                    return console.error(err);
-                }
-
-                console.log('Saved ' + doc.length + ' characters');
-            });
-
+            mapHooks(app, dropboxSync);
             if(dropboxSync.isActive()) {
                 dropboxSync.load(localStorage.currentFile, function(err, response){
                     startup(response);
