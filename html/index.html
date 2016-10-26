@@ -17,6 +17,7 @@
         <script src="/javascript/concord.js"></script>
         <script src="/javascript/concordUtils.js"></script>
         <script src="/javascript/app.js"></script>
+        <script src="/javascript/hooks.js"></script>
         <!-- /scripts -->
 
 
@@ -381,35 +382,7 @@
             }
 
         $(document).ready (function () {
-            app.on('cmd.file.list', function(e) {
-                e.preventDefault();
-                let filename = prompt('Please enter a filename to open');
-                if(!filename) {
-                    return;
-                }
-                saveOutlineNow(function(err){
-                    if(err) {
-                        return;
-                    }
-                    dropboxSync.load(filename, function(err, response) {
-                        if(err) {
-                            return console.error(err);
-                        }
-
-                        localStorage.currentFile = filename;
-                        opXmlToOutline(response);
-                    });
-                });
-            });
-
-            app.on('cmd.file.save', function(err, doc) {
-                if(err) {
-                    return console.error(err);
-                }
-
-                console.log('Saved ' + doc.length + ' characters');
-            });
-
+            mapHooks(app, dropboxSync);
             if(dropboxSync.isActive()) {
                 dropboxSync.load(localStorage.currentFile, function(err, response){
                     startup(response);
