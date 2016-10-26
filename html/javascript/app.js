@@ -15,6 +15,7 @@ function App() {
     autosaveDelay: 3 // defined in seconds
   };
 
+  this.events = {};
   this.bindDefaultEvents();
   this.initializeStorage(localStorage);
 }
