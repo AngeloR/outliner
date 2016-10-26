@@ -127,6 +127,22 @@ DropboxSync.prototype.lastSaveTime = function() {
   return localStorage.lastSaveTime;
 }
 
+DropboxSync.prototype.create = function(name, data, cb) {
+  let path = '/' + name + '.opml';
+  var blob = new Blob([data], {
+    type: 'application/xml'
+  });
+  this.dbx.filesUpload({
+    path: path,
+    contents: blob
+  }).then((response) => {
+    localStorage.lastSaveTime = Date.now();
+    cb(null, response);
+  }).catch(function(e){
+    cb(e);
+  });
+}
+
 DropboxSync.prototype.save = function(name, data, cb) {
   let path = '/' + name + '.opml';
   var blob = new Blob([data], {
