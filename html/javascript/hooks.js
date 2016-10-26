@@ -21,12 +21,12 @@ function mapHooks(app, dropboxSync) {
     });
   });
 
-
-  app.on('cmd.file.create', function(e) {
-    e.preventDefault();
-    let filename = prompt('Please enter a new file');
-    if(!filename) {
-      return;
+  app.on('cmd.file.save', function(err, doc) {
+    if(err) {
+      return console.error(err);
     }
+
+    console.log('Saved ' + doc.length + ' characters');
   });
+});
 }
