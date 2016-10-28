@@ -40,7 +40,7 @@ function DropboxSync(cb) {
   this.ACCESS_TOKEN = localStorage.accessToken || '';
   if(!this.ACCESS_TOKEN.length) {
     this.active = false;
-    params.clientId = 'vukdu3f3w12ooco';
+    params.clientId = 'cgz7quwipzbbn5q';
   }
   else {
     this.active = true;
@@ -97,7 +97,7 @@ DropboxSync.prototype.isActive = function() {
 }
 
 DropboxSync.prototype.activate = function() {
-  let authUrl = this.dbx.getAuthenticationUrl('https://fargo.dev.xangelo.ca/');
+  let authUrl = this.dbx.getAuthenticationUrl('https://far2go.xangelo.ca/');
   $('#authDropbox').on('click', function(e){
     window.location = authUrl;
   });
