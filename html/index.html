@@ -386,7 +386,7 @@
             mapHooks(app, dropboxSync);
             if(dropboxSync.isActive()) {
                 dropboxSync.load(localStorage.currentFile, function(err, response){
-                    if(err.indexOf('/not_found/')) {
+                    if(err && err.indexOf('/not_found/')) {
                         console.log(initialOpmltext);
                         return startup(initialOpmltext);
                     }
