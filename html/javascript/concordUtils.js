@@ -21,9 +21,9 @@ var appTypeIcons = {
 	"tweet": "twitter", //6/10/13 by DW
 	"metaWeblogPost": "file-text-alt"
 	}
-var initialOpmltext = 
-	"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><opml version=\"2.0\"><head><title>Untitled</title></head><body><outline text=\"\"/></body></opml>";
-var defaultUtilsOutliner = "#outliner"; 
+var initialOpmltext = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><opml version=\"2.0\"><head><title>Untitled</title></head><body><outline text=\"What is an Far2Go?\" created=\"Sun, 30 Oct 2016 22:15:47 GMT\"><outline text=\"Far2Go is an outliner. Outliners are built forhierarchical organization of data. They help you get your thoughts out on paper as you have them, and then lets you organize them easily later. \" created=\"Sun, 30 Oct 2016 22:15:56 GMT\"/><outline text=\"If this is your first time using an outliner, I'd recommend that you take a look at the fargo.io link in the resources section to get started!\" created=\"Wed, 07 Dec 2016 18:34:44 GMT\"/><outline text=\"Resources\" created=\"Sun, 30 Oct 2016 22:17:16 GMT\"><outline text=\"http://fargo.io/docs/outlinerHowto.html\" created=\"Wed, 07 Dec 2016 18:34:34 GMT\"/><outline text=\"https://en.wikipedia.org/wiki/Outliner\" created=\"Wed, 07 Dec 2016 18:34:40 GMT\"/></outline></outline></body></opml>";
+
+var defaultUtilsOutliner = "#outliner";
 //op glue routines
 	function opUndo () {
 		return ($(defaultUtilsOutliner).concord ().op.undo ())
@@ -135,7 +135,7 @@ var defaultUtilsOutliner = "#outliner";
 	function opCountSubs () {
 		return ($(defaultUtilsOutliner).concord().op.countSubs());
 		}
-	function opHasSubs () { 
+	function opHasSubs () {
 		return (opCountSubs () > 0);
 		}
 	function opSubsExpanded () {
@@ -151,7 +151,7 @@ var defaultUtilsOutliner = "#outliner";
 	function opXmlToOutline (xmltext) {
 		return ($(defaultUtilsOutliner).concord ().op.xmlToOutline (xmltext));
 		}
-	function opInsertXml (xmltext, dir) { 
+	function opInsertXml (xmltext, dir) {
 		return ($(defaultUtilsOutliner).concord ().op.insertXml (xmltext, dir));
 		}
 	function opOutlineToXml (ownerName, ownerEmail, ownerId) {
@@ -172,7 +172,7 @@ var defaultUtilsOutliner = "#outliner";
 	function opClearChanged () {
 		return ($(defaultUtilsOutliner).concord ().op.clearChanged ());
 		}
-	function opMarkChanged () { 
+	function opMarkChanged () {
 		return ($(defaultUtilsOutliner).concord ().op.markChanged ());
 		}
 	function opRedraw () {
@@ -186,22 +186,22 @@ var defaultUtilsOutliner = "#outliner";
 		}
 //readText
 	var readHttpUrl = "http://trex.smallpicture.com/ajax/httpReadUrl";
-	
+
 	function readText (url, callback, op, flAcceptOpml) {
 		var headerval = {};
 		if ((flAcceptOpml != undefined) && flAcceptOpml) { //5/14/13 by DW
 			headerval = {"Accept": "text/x-opml"};
 			}
-		var jxhr = $.ajax ({ 
+		var jxhr = $.ajax ({
 			url: readHttpUrl + "?url=" + encodeURIComponent (url) + "&type=" + encodeURIComponent ("text/plain"),
-			dataType: "text", 
+			dataType: "text",
 			headers: headerval,
-			timeout: 30000 
-			}) 
-		.success (function (data, status) { 
+			timeout: 30000
+			})
+		.success (function (data, status) {
 			callback (data, op);
-			}) 
-		.error (function (status) { 
+			})
+		.error (function (status) {
 			httpReadStatus = status;
 			});
 		}
@@ -229,7 +229,7 @@ var defaultUtilsOutliner = "#outliner";
 			if(!flCaseSensitive){
 				regularExpressionModifier = "gi";
 				}
-			var regularExpressionString = (startCharacters+item+endCharacters).replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"); 
+			var regularExpressionString = (startCharacters+item+endCharacters).replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
 			var regularExpression = new RegExp(regularExpressionString, regularExpressionModifier);
 			s = s.replace(regularExpression, replacementValue);
 			}
