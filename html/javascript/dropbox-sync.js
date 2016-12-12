@@ -77,6 +77,7 @@ DropboxSync.prototype.setActive = function() {
   if(!this.isActive()) {
     let access_token = this.getAccessTokenFromUrl();
     if(access_token && access_token.length) {
+      this.active = true;
       this.ACCESS_TOKEN = access_token;
       this.dbx.setAccessToken(this.ACCESS_TOKEN);
       localStorage.accessToken = this.ACCESS_TOKEN;

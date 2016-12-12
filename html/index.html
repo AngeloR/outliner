@@ -384,6 +384,7 @@
 
         $(document).ready (function () {
             mapHooks(app, dropboxSync);
+            dropboxSync.setActive();
             if(dropboxSync.isActive()) {
                 dropboxSync.load(localStorage.currentFile, function(err, response){
                     if(err && err.indexOf('/not_found/')) {
