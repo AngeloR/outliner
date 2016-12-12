@@ -1,7 +1,7 @@
 function App() {
   this.settings = {
-    productname: 'far2go',
-    productnameForDisplay: 'Far2Go',
+    productname: 'outliner',
+    productnameForDisplay: 'Outliner',
     domain: 'localhost',
     version: 1.0
   };
