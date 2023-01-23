@@ -1,0 +1,24 @@
+{
+  "name": "outline-browser",
+  "scripts": {
+    "build": "npx webpack"
+  },
+  "devDependencies": {
+    "@types/keyboardjs": "^2.5.0",
+    "@types/lodash": "^4.14.191",
+    "@types/marked": "^4.0.8",
+    "@types/uuid": "^9.0.0",
+    "ts-loader": "^9.4.2",
+    "tsconfig-paths": "^4.1.2",
+    "tsconfig-paths-webpack-plugin": "^4.0.0",
+    "typescript": "^4.9.4",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "keyboardjs": "^2.7.0",
+    "lodash": "^4.17.21",
+    "marked": "^4.2.12",
+    "uuid": "^9.0.0"
+  }
+}
