@@ -144,6 +144,28 @@ keyboardJS.withContext('navigation', () => {
     save();
   });
 
+  keyboardJS.bind('shift + 4', e => {
+    e.preventDefault();
+    // switch to editing mode
+    cursor.get().classList.add('hidden-cursor');
+    const contentNode = cursor.get().querySelector('.nodeContent') as HTMLElement;
+
+    // swap the content to the default!
+    contentNode.innerHTML = outline.data.contentNodes[cursor.getIdOfNode()].content;
+    contentNode.contentEditable = "true";
+
+    const range = document.createRange();
+    range.selectNodeContents(contentNode);
+    range.collapse(false);
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    contentNode.focus();
+    keyboardJS.setContext('editing');
+  });
+
   keyboardJS.bind('i', e => {
     e.preventDefault();
     // switch to editing mode
