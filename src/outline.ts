@@ -55,7 +55,7 @@ export class Outline {
 
   unfold(nodeId: string) {
     this.findNodeInTree(this.data.tree, nodeId, item => {
-      item.collapsed = true;
+      item.collapsed = false;
     });
   }
 
