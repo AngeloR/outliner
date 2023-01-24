@@ -3,6 +3,7 @@ import { Cursor } from './cursor';
 import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
 import {showHelp} from 'help';
+import { Search } from './search';
 
 let outlineData = rawOutline;
 if(localStorage.getItem('activeOutline')) {
@@ -17,6 +18,8 @@ outliner().innerHTML = outline.render();
 const cursor = new Cursor();
 // place the cursor at the top!
 cursor.set('.node');
+
+const search = new Search();
 
 function outliner() {
   return document.querySelector('#outliner');
@@ -285,6 +288,41 @@ keyboardJS.withContext('editing', () => {
 });
 
 keyboardJS.setContext('navigation');
+
+search.createIndex({
+  id: "string",
+  created: "number",
+  type: "string",
+  content: "string",
+  strikethrough: "boolean"
+}).then(async () => {
+  await search.indexBatch(outline.data.contentNodes);
+  search.bindEvents();
+});
+
+function recursivelyExpand(start: HTMLElement) {
+  if(start.classList.contains('node')) {
+    if(start.classList.contains('collapsed')) {
+      start.classList.remove('collapsed');
+      start.classList.add('expanded');
+      outline.unfold(start.getAttribute('data-id'));
+    }
+
+    if(start.parentElement) {
+      recursivelyExpand(start.parentElement)
+    }
+  }
+}
+
+search.onTermSelection = (docId: string) => {
+  // if any parent element in the chain to this node
+  // are collapsed, we want to make sure we expand them
+
+  recursivelyExpand(document.getElementById(`id-${docId}`).parentElement);
+  cursor.set(`#id-${docId}`);
+
+  save();
+};
 
 function saveImmediate() {
   localStorage.setItem(outline.data.id, JSON.stringify(outline.data));

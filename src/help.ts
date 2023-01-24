@@ -13,6 +13,7 @@ const keyboardCommands = {
   'shift + h': 'Lift the current node to be a sibling of the parent node',
   'shift + l': 'Lower the current node to be a child of the previous sibling node',
   'shift + d': 'Delete the current node',
+  'shift + f': 'Open the search modal',
   'i': 'Enter "edit" mode, and place the cursor at the start of the editable content',
   '$': 'Enter "edit" mode, and place the cursor at the end of the editable content',
   'escape': 'Exit the current mode and return to "navigation" mode',

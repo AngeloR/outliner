@@ -10,6 +10,14 @@ module.exports = {
   entry: {
     main: "./src/client.ts",
   },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader"
+      }
+    ]
+  },
   output: {
     path: path.resolve(__dirname, './public', 'assets'),
     filename: "bundle.js" // <--- Will be compiled to this single file
@@ -20,15 +28,8 @@ module.exports = {
       new tsconfigPaths()
     ]
   },
-  module: {
-    rules: [
-      { 
-        test: /\.tsx?$/,
-        loader: "ts-loader"
-      }
-    ]
-  },
-  externals: {
-    'jquery': 'jQuery'
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, './public', 'assets')
   }
 };

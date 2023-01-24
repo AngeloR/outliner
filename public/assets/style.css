@@ -27,6 +27,26 @@ body {
   margin-bottom: 1rem;
 }
 
+/** search **/
+#search-query {
+  width: 100%;
+  border: solid 1px #888;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+.search-results {
+  margin: 1rem 0;
+}
+.search-result {
+  margin: 0.6rem 0;
+  padding: 0.6rem;
+  line-height: 1.6rem;
+}
+.search-result.selected {
+  color: #fff;
+  background-color: #000;
+}
+
 #outliner {
   background-color: #fff;
   border: solid 1px #ddd;
