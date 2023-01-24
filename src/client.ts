@@ -209,13 +209,14 @@ keyboardJS.withContext('navigation', () => {
       cursor.get().parentElement.outerHTML = html;
     }
 
-    if(prevSibling) {
+    if(prevSibling.getAttribute('data-id')) {
       cursor.set(`#id-${prevSibling.getAttribute('data-id')}`);
     }
-    else if(nextSibling) {
+    else if(nextSibling.getAttribute('data-id')) {
       cursor.set(`#id-${nextSibling.getAttribute('data-id')}`);
     }
     else {
+      console.log(res.parentNode.id);
       cursor.set(`#id-${res.parentNode.id}`);
     }
 
