@@ -3,6 +3,7 @@ import { Cursor } from './cursor';
 import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
 import {showHelp} from 'help';
+import { Search } from './search';
 
 let outlineData = rawOutline;
 if(localStorage.getItem('activeOutline')) {
@@ -11,6 +12,7 @@ if(localStorage.getItem('activeOutline')) {
 }
 
 const state = new Map<string, any>();
+const search = new Search();
 const outline = new Outline(outlineData as unknown as RawOutline);
 outliner().innerHTML = outline.render();
 
@@ -277,6 +279,12 @@ keyboardJS.withContext('editing', () => {
 });
 
 keyboardJS.setContext('navigation');
+search.indexBatch(outline.data.contentNodes);
+
+setTimeout(async () => {
+  const res = await search.search('outline');
+  console.log(res);
+}, 1000);
 
 function saveImmediate() {
   localStorage.setItem(outline.data.id, JSON.stringify(outline.data));

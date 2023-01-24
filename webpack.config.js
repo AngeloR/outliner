@@ -4,13 +4,15 @@ const tsconfigPaths = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   mode: "development",
-  devtool: "inline-source-map",
-  entry: {
-    main: "./src/client.ts",
-  },
-  output: {
-    path: path.resolve(__dirname, './public', 'assets'),
-    filename: "bundle.js" // <--- Will be compiled to this single file
+  entry: "./src/client.ts",
+  module: {
+    rules: [
+      { 
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        exclude: path.resolve('node_modules/')
+      }
+    ]
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
@@ -18,15 +20,8 @@ module.exports = {
       new tsconfigPaths()
     ]
   },
-  module: {
-    rules: [
-      { 
-        test: /\.tsx?$/,
-        loader: "ts-loader"
-      }
-    ]
-  },
-  externals: {
-    'jquery': 'jQuery'
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, './public', 'assets')
   }
 };
