@@ -1,6 +1,7 @@
 {
   "name": "outline-browser",
   "scripts": {
+    "dev": "npx webpack -w",
     "build": "npx webpack"
   },
   "devDependencies": {
