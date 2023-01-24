@@ -2,6 +2,7 @@ import { Outline, RawOutline } from './outline';
 import { Cursor } from './cursor';
 import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
+import {showHelp} from 'help';
 
 let outlineData = rawOutline;
 if(localStorage.getItem('activeOutline')) {
@@ -20,6 +21,13 @@ cursor.set('.node');
 function outliner() {
   return document.querySelector('#outliner');
 }
+
+document.getElementById('display-help').addEventListener('click', e => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  showHelp();
+});
 
 // move down
 keyboardJS.withContext('navigation', () => {
@@ -48,6 +56,11 @@ keyboardJS.withContext('navigation', () => {
         cursor.set(`#id-${sibling.getAttribute('data-id')}`);
       }
     }
+  });
+
+
+  keyboardJS.bind('shift + /', e => {
+    showHelp();
   });
 
   keyboardJS.bind('k', e => {
