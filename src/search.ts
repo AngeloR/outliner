@@ -2,6 +2,7 @@ import { create, insert, insertBatch, search } from '@lyrasearch/lyra';
 import { map } from 'lodash';
 import { OutlineNode } from 'outline';
 import keyboardJS from 'keyboardjs';
+import {isVisible} from 'dom';
 
 const searchModal = `
 <div class="modal">
@@ -38,19 +39,27 @@ export class Search {
       });
 
       keyboardJS.bind('down', e => {
+        e.preventDefault();
         document.getElementById('search-query').blur();
         const el = document.querySelector('.search-result.selected');
         if(el.nextElementSibling) {
           el.classList.remove('selected');
           el.nextElementSibling.classList.add('selected');
+          if(!isVisible(el.nextElementSibling as HTMLElement)) {
+            el.nextElementSibling.scrollIntoView();
+          }
         }
       });
 
-      keyboardJS.bind('up', () => {
+      keyboardJS.bind('up', e => {
+        e.preventDefault();
         const el = document.querySelector('.search-result.selected');
         if(el.previousElementSibling) {
           el.classList.remove('selected');
           el.previousElementSibling.classList.add('selected');
+          if(!isVisible(el.previousElementSibling as HTMLElement)) {
+            el.previousElementSibling.scrollIntoView();
+          }
         }
       })
 

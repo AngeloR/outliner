@@ -1,3 +1,5 @@
+import {isVisible} from "dom";
+
 export class Cursor {
   constructor() {
 
@@ -20,11 +22,11 @@ export class Cursor {
 
   set(elementId: string) {
     this.unset();
-    const el = document.querySelector(elementId);
+    const el = document.querySelector(elementId) as HTMLElement;
 
     if(el) {
       el.classList.add('cursor');
-      if(!this.isVisible(elementId)) {
+      if(!isVisible(el)) {
         el.scrollIntoView(true);
       }
     }
@@ -46,16 +48,5 @@ export class Cursor {
   
   isNodeExpanded(): boolean {
     return this.get().classList.contains('expanded');
-  }
-
-  isVisible(elementId: string) {
-    const el = document.querySelector(elementId) as HTMLElement;
-    var rect = el.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&     
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
   }
 }

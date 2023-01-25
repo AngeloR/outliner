@@ -18624,12 +18624,13 @@ save();
 /*!***********************!*\
   !*** ./src/cursor.ts ***!
   \***********************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Cursor = void 0;
+const dom_1 = __webpack_require__(/*! dom */ "./src/dom.ts");
 class Cursor {
     constructor() {
     }
@@ -18650,7 +18651,7 @@ class Cursor {
         const el = document.querySelector(elementId);
         if (el) {
             el.classList.add('cursor');
-            if (!this.isVisible(elementId)) {
+            if (!(0, dom_1.isVisible)(el)) {
                 el.scrollIntoView(true);
             }
         }
@@ -18669,16 +18670,30 @@ class Cursor {
     isNodeExpanded() {
         return this.get().classList.contains('expanded');
     }
-    isVisible(elementId) {
-        const el = document.querySelector(elementId);
-        var rect = el.getBoundingClientRect();
-        return (rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth));
-    }
 }
 exports.Cursor = Cursor;
+
+
+/***/ }),
+
+/***/ "./src/dom.ts":
+/*!********************!*\
+  !*** ./src/dom.ts ***!
+  \********************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isVisible = void 0;
+function isVisible(element) {
+    const rect = element.getBoundingClientRect();
+    return (rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth));
+}
+exports.isVisible = isVisible;
 
 
 /***/ }),
@@ -19058,6 +19073,7 @@ exports.Search = void 0;
 const lyra_1 = __webpack_require__(/*! @lyrasearch/lyra */ "./node_modules/@lyrasearch/lyra/dist/cjs/index.cjs");
 const lodash_1 = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 const keyboardjs_1 = __importDefault(__webpack_require__(/*! keyboardjs */ "./node_modules/keyboardjs/dist/keyboard.js"));
+const dom_1 = __webpack_require__(/*! dom */ "./src/dom.ts");
 const searchModal = `
 <div class="modal">
 <div class="modal-content" id="search">
@@ -19086,18 +19102,26 @@ class Search {
                 keyboardjs_1.default.setContext('navigation');
             });
             keyboardjs_1.default.bind('down', e => {
+                e.preventDefault();
                 document.getElementById('search-query').blur();
                 const el = document.querySelector('.search-result.selected');
                 if (el.nextElementSibling) {
                     el.classList.remove('selected');
                     el.nextElementSibling.classList.add('selected');
+                    if (!(0, dom_1.isVisible)(el.nextElementSibling)) {
+                        el.nextElementSibling.scrollIntoView();
+                    }
                 }
             });
-            keyboardjs_1.default.bind('up', () => {
+            keyboardjs_1.default.bind('up', e => {
+                e.preventDefault();
                 const el = document.querySelector('.search-result.selected');
                 if (el.previousElementSibling) {
                     el.classList.remove('selected');
                     el.previousElementSibling.classList.add('selected');
+                    if (!(0, dom_1.isVisible)(el.previousElementSibling)) {
+                        el.previousElementSibling.scrollIntoView();
+                    }
                 }
             });
             keyboardjs_1.default.bind('enter', e => {
