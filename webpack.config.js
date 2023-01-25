@@ -6,7 +6,7 @@ const env = process.env.ENVIRONMENT || 'development';
 
 module.exports = {
   mode: env,
-  devtool: env === 'environment' ? "inline-source-map" : false,
+  devtool: env === 'development' ? "inline-source-map" : false,
   entry: {
     main: "./src/client.ts",
   },
