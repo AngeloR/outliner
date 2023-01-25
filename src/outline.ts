@@ -21,6 +21,7 @@ export interface OutlineNode {
   created: number;
   type: 'text',
   content: string,
+  strikethrough: boolean;
 };
 
 export class Outline {
@@ -179,7 +180,8 @@ export class Outline {
       id: uuid(),
       created: Date.now(),
       type: 'text',
-      content: '---'
+      content: '---',
+      strikethrough: false
     };
 
     this.data.contentNodes[outlineNode.id] = outlineNode;
@@ -209,7 +211,8 @@ export class Outline {
       id: uuid(),
       created: Date.now(),
       type: 'text',
-      content: '---'
+      content: '---',
+      strikethrough: false
     };
 
     if(!nodeId) {
@@ -288,10 +291,13 @@ export class Outline {
       id: node.id,
       created: Date.now(),
       type: 'text',
-      content: ''
+      content: '',
+      strikethrough: false
     };
 
-    let html = `<div class="node ${collapse}" data-id="${node.id}" id="id-${node.id}">
+    const strikethrough = content.strikethrough ? 'strikethrough' : '';
+
+    let html = `<div class="node ${collapse} ${strikethrough}" data-id="${node.id}" id="id-${node.id}">
     <div class="nodeContent" data-type="${content.type}">
       ${this.renderContent(node.id)}
     </div>

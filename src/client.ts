@@ -192,6 +192,14 @@ keyboardJS.withContext('navigation', () => {
     keyboardJS.setContext('editing');
   });
 
+  keyboardJS.bind('shift + x', e => {
+    e.preventDefault();
+    // toggle "strikethrough" of node
+    cursor.get().classList.toggle('strikethrough');
+    outline.data.contentNodes[cursor.getIdOfNode()].strikethrough = cursor.get().classList.contains('strikethrough');
+    save();
+  });
+
   keyboardJS.bind('tab', e => {
     e.preventDefault();
 

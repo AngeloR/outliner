@@ -70,6 +70,10 @@ body {
   color: #000;
   background-color: #fff;
 }
+.strikethrough, .strikethrough .node {
+  text-decoration: line-through;
+  color: #808080;
+}
 
 
 footer {
