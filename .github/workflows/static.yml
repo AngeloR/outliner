@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.7.0
-      - run: NODE_ENV=production npm i
+      - run: npm i
       - run: ENVIRONMENT=production npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
