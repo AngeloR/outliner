@@ -38,16 +38,17 @@ body {
   color: #222;
 }
 .node.collapsed::before, .node.expanded::before {
-  content: '\22B3';
   float: left;
   padding-top: 6px;
   padding-right: 5px;
 }
 .node.collapsed::before {
   color: #222;
+  content: '\25B8';
 }
 .node.expanded::before {
   color: #aaa;
+  content: '\25B9';
 }
 
 .node.collapsed > .node {
@@ -57,6 +58,13 @@ body {
 .nodeContent {
   padding: 2px 1rem;;
   line-height: 1.7rem;
+}
+.node.cursor.expanded::before {
+  color: #000;
+  content: '\25B8';
+}
+.node.cursor.collapsed::before {
+  color: #fff;
 }
 .node.cursor > .nodeContent {
   color: #fff;
