@@ -3,6 +3,7 @@ import { Cursor } from './cursor';
 import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
 import {showHelp} from 'help';
+import { PersistOutline } from 'persistentOutline';
 
 let outlineData = rawOutline;
 if(localStorage.getItem('activeOutline')) {
@@ -11,6 +12,7 @@ if(localStorage.getItem('activeOutline')) {
 }
 
 const state = new Map<string, any>();
+const persistence = new PersistOutline();
 const outline = new Outline(outlineData as unknown as RawOutline);
 outliner().innerHTML = outline.render();
 
@@ -27,6 +29,22 @@ document.getElementById('display-help').addEventListener('click', e => {
   e.stopPropagation();
 
   showHelp();
+});
+
+document.getElementById('rs-login').addEventListener('click', e => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const promptKey = 'rs-prompt';
+
+  if(state.has(promptKey)) {
+    document.querySelector('#remotestorage-widget').remove();
+    state.delete(promptKey);
+  }
+  else {
+    persistence.attachWidget('nav');
+    state.set(promptKey, Date.now());
+  }
 });
 
 // move down

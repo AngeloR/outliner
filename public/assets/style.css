@@ -5,6 +5,16 @@ body {
   margin: 0 auto;
   width: 780px;
   padding: 2rem 1rem;
+  font-family: sans-serif;
+  position: relative;
+}
+
+nav {
+  text-align: right;
+}
+nav li {
+  display: inline-block;
+  padding: 0 1rem;
 }
 
 .modal {
@@ -109,4 +119,12 @@ kbd {
   line-height: 1rem;
   white-space: nowrap;
 }
+a {
+  color: #2250db;
+}
 
+/** rs widget **/
+#remotestorage-widget {
+  position: absolute;
+  right: 0;
+}
