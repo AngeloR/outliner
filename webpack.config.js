@@ -2,9 +2,11 @@
 const path = require('path');
 const tsconfigPaths = require('tsconfig-paths-webpack-plugin');
 
+const env = process.env.ENVIRONMENT || 'development';
+
 module.exports = {
-  mode: "development",
-  devtool: "inline-source-map",
+  mode: env,
+  devtool: env === 'environment' ? "inline-source-map" : false,
   entry: {
     main: "./src/client.ts",
   },
