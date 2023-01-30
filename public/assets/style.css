@@ -1,3 +1,11 @@
+/**
+ * Sections
+ *
+ * SEARCH
+ * OUTLINER
+ * TEXTSTYLES
+ */
+
 body {
   background-color: #eee;
   font-size: 1rem;
@@ -5,6 +13,10 @@ body {
   margin: 0 auto;
   width: 780px;
   padding: 2rem 1rem;
+}
+
+footer {
+  text-align: center;
 }
 
 .modal {
@@ -27,7 +39,7 @@ body {
   margin-bottom: 1rem;
 }
 
-/** search **/
+/** SEARCH **/
 #search-query {
   width: 100%;
   border: solid 1px #888;
@@ -47,6 +59,7 @@ body {
   background-color: #000;
 }
 
+/** OUTLINER **/
 #outliner {
   background-color: #fff;
   border: solid 1px #ddd;
@@ -96,20 +109,29 @@ body {
 
 .cursor.hidden-cursor > .nodeContent {
   color: #000;
-  background-color: #fff;
-}
+  background-color: #fff; }
 .strikethrough, .strikethrough .node {
   text-decoration: line-through;
   color: #808080;
 }
 
-
-footer {
-  text-align: center;
+a {
+  color: #098bd9;
+}
+.cursor > .nodeContent a {
+  color: #098bd9;
+}
+a:visited {
+  color: #b26be4;
+}
+.cursor > .nodeContent a:visited {
+  color: #b26be4;
 }
 
 
-/* text styles */
+
+
+/* TEXTSTYLES */
 
 em {
   font-style: italic;
@@ -141,4 +163,3 @@ kbd {
   line-height: 1rem;
   white-space: nowrap;
 }
-
