@@ -9,6 +9,7 @@
     "@types/lodash": "^4.14.191",
     "@types/marked": "^4.0.8",
     "@types/uuid": "^9.0.0",
+    "serve": "^14.2.0",
     "ts-loader": "^9.4.2",
     "tsconfig-paths": "^4.1.2",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
