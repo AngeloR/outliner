@@ -163,6 +163,41 @@ async function validateActivatedAccount(accountId: string, token: string): Promi
   return account;
 }
 
+app.get('/account/:accountId/outline', async req => {
+  const { accountId } = req.params as { accountId: string };
+  const { token } = req.query as { token: string };
+
+  const account = await validateActivatedAccount(accountId, token)
+
+  return await prisma.outline.findMany({
+    where: {
+      accountId
+    },
+    select: {
+      id: true,
+      createdDate: true,
+      lastUpdated: true,
+      name: true
+    }
+  });
+});
+
+app.get('/account/:accountId/outline/:outlineId', async req => {
+  const { accountId, outlineId } = req.params as { accountId: string, outlineId: string };
+  const { token } = req.query as { token: string };
+
+  const account = await validateActivatedAccount(accountId, token)
+
+  return await prisma.outline.findUnique({
+    where: {
+      id_accountId: {
+        id: outlineId,
+        accountId
+      }
+    }
+  });
+});
+
 // this endpoint is used to create an outline. If the outline already exists 
 // it will return a 206 which indicates partial content. 
 // if the outline doesn't exist, you'll receive a 201
@@ -256,11 +291,34 @@ app.post('/account/:accountId/batch-content-create', async (req, res) => {
   return {};
 });
 
+app.post('/account/:accountId/content/:contentId', async req => {
+  const { accountId, contentId } = req.params as { accountId: string, contentId: string };
+  const { token } = req.query as { token: string };
+  const data = req.body as { content: any };
 
-// this is the endpoint that accepts a bunch of changes to node states 
-// and propagates them to the database to save network calls.
-app.patch('/account/:accountId/content/:contentId', async req => {
+  const account = validateActivatedAccount(accountId, token);
 
+  const update = await prisma.contentNode.upsert({
+    where: {
+      id_accountId: {
+        id: contentId,
+        accountId
+      }
+    },
+    create: {
+      id: data.content.id,
+      accountId: accountId,
+      type: data.content.type,
+      content: data.content.content,
+      archiveDate: data.content.archiveDate
+    },
+    update: {
+      content: data.content.content,
+      archiveDate: data.content.archiveDate
+    }
+  });
+
+  return {};
 });
 
 async function main() {

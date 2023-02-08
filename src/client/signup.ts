@@ -20,6 +20,6 @@ export const signupModal = new Modal({
 }, modalHTML);
 
 // if there's a "save token" then you can remove the "signup" button
-if(localStorage.getItem('saveToken')) {
+if(localStorage.getItem('authToken')) {
   document.getElementById('remote-sync').remove();
 }

@@ -37,7 +37,7 @@ document.getElementById('display-help').addEventListener('click', e => {
   helpModal.show();
 });
 
-document.getElementById('remote-sync').addEventListener('click', async e => {
+document.getElementById('remote-sync')?.addEventListener('click', async e => {
   e.preventDefault();
   e.stopPropagation();
 
@@ -295,7 +295,9 @@ keyboardJS.withContext('editing', () => {
     outline.updateContent(cursor.getIdOfNode(), contentNode.innerHTML.trim());
     // re-render this node!
     contentNode.innerHTML = outline.renderContent(cursor.getIdOfNode());
-    save();
+
+    // push the new node content remotely!
+    api.saveContentNode(outline.data.contentNodes[cursor.getIdOfNode()])
   });
 });
 
@@ -340,7 +342,6 @@ function saveImmediate() {
   localStorage.setItem(outline.data.id, JSON.stringify(outline.data));
   localStorage.setItem('activeOutline', outline.data.id);
   state.delete('saveTimeout');
-  console.log('saved...', outline.data);
 
   api.syncOutlineFromLocal(outline.data);
 }

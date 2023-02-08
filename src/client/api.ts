@@ -1,4 +1,4 @@
-import {RawOutline, OutlineTree} from "../lib/outline";
+import {RawOutline, OutlineTree, OutlineNode} from "../lib/outline";
 import { map } from 'lodash';
 
 
@@ -30,6 +30,11 @@ export class ApiClient {
     if(syncFromRemote) {
       this.syncOutlineFromRemote()
     }
+  }
+  
+  async get<T>(endpoint: string): Promise<T> {
+    const res = await fetch(`${this.apiHost}${endpoint}?=token=${this.authToken}`);
+    return await res.json() as T;
   }
 
   async post<T>(endpoint: string, body: Record<string, any> = {}): Promise<[T, number]> {
@@ -66,6 +71,16 @@ export class ApiClient {
 
   async syncTree(id: string, tree: OutlineTree) {
     const [ , statusCode] = await this.patch(`/account/${this.accountId}/outline/${id}`, { outlineTree: tree });
+  }
+
+  async listRemoteOutlines() {
+    return this.get(`/account/${this.accountId}/outline`);
+  }
+
+  async saveContentNode(content: OutlineNode) {
+    return this.post(`/account/${this.accountId}/content/${content.id}`, {
+      content
+    });
   }
 
   async syncOutlineFromLocal(outline: RawOutline) {
