@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id String @id @default(uuid())
+  emailAddress String @unique
+  activationToken String @default(uuid())
+  activated Boolean @default(false)
+  activatedDate DateTime?
+}
+
+model Outline {
+  id String @default(uuid())
+  accountId String
+  createdDate DateTime @default(now())
+  lastUpdated DateTime @default(now())
+  name String
+  tree Json
+  @@id([id, accountId])
+}
+
+model ContentNode {
+  id String @default(uuid())
+  accountId String
+  created DateTime @default(now())
+  lastUpdated DateTime @default(now())
+  type String
+  content String
+  archiveDate DateTime?
+  @@id([id, accountId])
+}

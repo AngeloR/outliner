@@ -8,7 +8,7 @@ module.exports = {
   mode: env,
   devtool: env === 'development' ? "inline-source-map" : false,
   entry: {
-    main: "./src/client.ts",
+    main: "./src/client/client.ts",
   },
   module: {
     rules: [

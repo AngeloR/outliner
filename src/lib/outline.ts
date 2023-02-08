@@ -28,7 +28,16 @@ export class Outline {
   data: RawOutline;
 
   constructor(outlineData: RawOutline) {
-    this.data = outlineData;
+    this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
+
+    if(this.data.id === '000000') {
+      this.resetOutlineForUse();
+    }
+  }
+
+  resetOutlineForUse() {
+    this.data.id = uuid();
+    this.data.tree.id = this.data.id;
   }
 
   findNodeInTree(root: OutlineTree, id: string, action: (item: OutlineTree, parent: OutlineTree) => void, runState: boolean = false) {

@@ -1,8 +1,8 @@
 import { create, insert, insertBatch, search } from '@lyrasearch/lyra';
 import { map } from 'lodash';
-import { OutlineNode } from 'outline';
+import { OutlineNode } from '../lib/outline';
 import keyboardJS from 'keyboardjs';
-import {isVisible} from 'dom';
+import {isVisible} from './dom';
 
 const searchModal = `
 <div class="modal">

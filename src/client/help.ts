@@ -1,5 +1,6 @@
 import keyboardJS from 'keyboardjs';
 import { map } from 'lodash';
+import { Modal } from './lib/modal';
 
 const keyboardCommands = {
   'h': 'Move the cursor to the Parent Element of the current node',
@@ -21,43 +22,33 @@ const keyboardCommands = {
 };
 
 const modalHTML = `
-  <div class="modal">
-  <div class="modal-content">
-    <h1>Help</h1>
-    <table>
-    <thead>
+  <p><b>Daily Backup:</b> The daily backup system lets you mash the "Daily Backup" button as much as you'd like.. but will only save the last time you clicked on it. You can only click it once and hour. Your content will always be saved in local-storage as well, but its always good to have a backup system.</p>
+  <table>
+  <thead>
+  <tr>
+  <th>Key</th>
+  <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  ${map(keyboardCommands, (text, key) => {
+    return `
     <tr>
-    <th>Key</th>
-    <th>Action</th>
+      <td>
+        <kbd>${key}</kbd>
+      </td>
+      <td>
+        ${text}
+      </td>
     </tr>
-    </thead>
-    <tbody>
-    ${map(keyboardCommands, (text, key) => {
-      return `
-      <tr>
-        <td>
-          <kbd>${key}</kbd>
-        </td>
-        <td>
-          ${text}
-        </td>
-      </tr>
-      `
-    }).join("\n")}
-    </tbody>
-    </table>
-  </div>
-  </div>
+    `
+  }).join("\n")}
+  </tbody>
+  </table>
 `
 
-export function showHelp() {
-  document.querySelector('body').innerHTML += modalHTML;
-  keyboardJS.setContext('help');
-}
-
-keyboardJS.withContext('help', () => {
-  keyboardJS.bind('escape', e => {
-    document.querySelector('.modal').remove();
-    keyboardJS.setContext('navigation');
-  });
-});
+export const helpModal = new Modal({
+  title: 'Help',
+  keyboardContext: 'help',
+  escapeExitable: true
+}, modalHTML);

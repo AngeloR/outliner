@@ -13,6 +13,18 @@ body {
   margin: 0 auto;
   width: 780px;
   padding: 2rem 1rem;
+  font-family: sans-serif;
+}
+
+nav {
+  text-align: right;
+}
+nav li {
+  display: inline-block;
+  padding: 0 1rem;
+}
+nav li a, nav li a:visited {
+  color: #098bd9;
 }
 
 footer {
@@ -36,6 +48,10 @@ footer {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
 .modal-content > h1 {
+  margin-bottom: 1rem;
+}
+.modal-content p {
+  line-height: 1.4rem;
   margin-bottom: 1rem;
 }
 

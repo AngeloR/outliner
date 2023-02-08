@@ -1,11 +1,16 @@
-import { Outline, RawOutline } from './outline';
+import { Outline, RawOutline } from '../lib/outline';
 import { Cursor } from './cursor';
 import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
-import {showHelp} from 'help';
+import {helpModal} from './help';
 import { Search } from './search';
+import { signupModal } from './signup';
+import { ApiClient } from './api';
 
+const api = new ApiClient();
 let outlineData = rawOutline;
+// reset the ID so everyone gets a unique outliner
+// if they don't have one saved in local storage
 if(localStorage.getItem('activeOutline')) {
   const outlineId = localStorage.getItem('activeOutline');
   outlineData = JSON.parse(localStorage.getItem(outlineId));
@@ -29,7 +34,14 @@ document.getElementById('display-help').addEventListener('click', e => {
   e.preventDefault();
   e.stopPropagation();
 
-  showHelp();
+  helpModal.show();
+});
+
+document.getElementById('remote-sync').addEventListener('click', async e => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  signupModal.show();
 });
 
 // move down
@@ -63,7 +75,7 @@ keyboardJS.withContext('navigation', () => {
 
 
   keyboardJS.bind('shift + /', e => {
-    showHelp();
+    helpModal.show();
   });
 
   keyboardJS.bind('k', e => {
@@ -327,8 +339,10 @@ search.onTermSelection = (docId: string) => {
 function saveImmediate() {
   localStorage.setItem(outline.data.id, JSON.stringify(outline.data));
   localStorage.setItem('activeOutline', outline.data.id);
-  console.log('saved...', outline.data);
   state.delete('saveTimeout');
+  console.log('saved...', outline.data);
+
+  api.syncOutlineFromLocal(outline.data);
 }
 
 function save() {
