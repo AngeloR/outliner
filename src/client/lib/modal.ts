@@ -24,6 +24,10 @@ export class Modal extends CustomEventEmitter {
     this.name = slugify(this.options.name || this.options.title);
     this.id = `id-${uuid()}`;
 
+    if(this.options.escapeExitable && !this.options.keyboardContext) {
+      this.options.keyboardContext = slugify(this.options.title) + 'kbd-context';
+    }
+
     if(this.options.keyboardContext && this.options.escapeExitable) {
       this.makeExitable();
     }
@@ -34,7 +38,6 @@ export class Modal extends CustomEventEmitter {
         console.debug(`Bind exit for context to [${this.options.keyboardContext}]`)
       keyboardJS.bind('escape', e => {
         this.remove();
-        keyboardJS.setContext('navigation');
       })
     });
   }
@@ -98,5 +101,6 @@ export class Modal extends CustomEventEmitter {
   remove() {
     document.getElementById(this.id).remove();
     this.emit('removed');
+    keyboardJS.setContext('navigation');
   }
 }

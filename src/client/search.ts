@@ -1,6 +1,6 @@
 import { create, insert, insertBatch, search } from '@lyrasearch/lyra';
 import { map } from 'lodash';
-import { OutlineNode } from '../lib/outline';
+import { ContentNode } from '@prisma/client';
 import keyboardJS from 'keyboardjs';
 import {isVisible} from './dom';
 
@@ -134,7 +134,7 @@ export class Search {
     return insert(this.db, doc)
   }
 
-  indexBatch(docs: Record<string, OutlineNode>) {
+  indexBatch(docs: Record<string, ContentNode>) {
     return insertBatch(this.db, map(docs, doc => doc as any));
   }
 

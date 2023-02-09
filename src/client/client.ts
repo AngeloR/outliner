@@ -7,7 +7,19 @@ import { Search } from './search';
 import { signupModal } from './signup';
 import { ApiClient } from './api';
 
-const api = new ApiClient();
+const outlineVersion = '0.0.1';
+
+// migrate between versions!
+switch(localStorage.getItem('outlineVersion')) {
+  case '0.0.1':
+    // user is on current version
+    break;
+  default:
+    // no outline -> migrate to v0.0.1
+    localStorage.setItem('outlineVersion', outlineVersion);
+    break;
+}
+
 let outlineData = rawOutline;
 // reset the ID so everyone gets a unique outliner
 // if they don't have one saved in local storage
@@ -23,6 +35,9 @@ outliner().innerHTML = outline.render();
 const cursor = new Cursor();
 // place the cursor at the top!
 cursor.set('.node');
+
+const api = new ApiClient(outline, cursor);
+
 
 const search = new Search();
 
@@ -211,7 +226,8 @@ keyboardJS.withContext('navigation', () => {
     e.preventDefault();
     // toggle "strikethrough" of node
     cursor.get().classList.toggle('strikethrough');
-    outline.data.contentNodes[cursor.getIdOfNode()].strikethrough = cursor.get().classList.contains('strikethrough');
+    outline.data.contentNodes[cursor.getIdOfNode()].archiveDate = cursor.get().classList.contains('strikethrough') ? new Date(): null;
+    api.saveContentNode(outline.data.contentNodes[cursor.getIdOfNode()]);
     save();
   });
 
@@ -224,6 +240,7 @@ keyboardJS.withContext('navigation', () => {
     cursor.get().outerHTML = html;
 
     cursor.set(`#id-${res.node.id}`);
+    api.saveContentNode(res.node);
     save();
   });
   
@@ -246,6 +263,7 @@ keyboardJS.withContext('navigation', () => {
     }
 
     cursor.set(`#id-${res.node.id}`);
+    api.saveContentNode(res.node);
     save();
   });
 
@@ -305,10 +323,12 @@ keyboardJS.setContext('navigation');
 
 search.createIndex({
   id: "string",
-  created: "number",
+  accountId: "string",
+  created: "string",
+  "lastUpdated": "string",
   type: "string",
   content: "string",
-  strikethrough: "boolean"
+  archiveDate: "string"
 }).then(async () => {
   await search.indexBatch(outline.data.contentNodes);
   search.bindEvents();
@@ -338,17 +358,12 @@ search.onTermSelection = (docId: string) => {
   save();
 };
 
-function saveImmediate() {
-  localStorage.setItem(outline.data.id, JSON.stringify(outline.data));
-  localStorage.setItem('activeOutline', outline.data.id);
-  state.delete('saveTimeout');
-
-  api.syncOutlineFromLocal(outline.data);
-}
-
 function save() {
   if(!state.has('saveTimeout')) {
-    state.set('saveTimeout', setTimeout(saveImmediate, 2000));
+    state.set('saveTimeout', setTimeout(async () => {
+      await api.save();
+      state.delete('saveTimeout');
+    }, 2000));
   }
 }
 

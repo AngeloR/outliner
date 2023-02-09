@@ -1,13 +1,14 @@
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
+import { ContentNode } from '@prisma/client';
 
 export interface RawOutline {
   id: string;
   created: number;
   name: string;
   tree: OutlineTree;
-  contentNodes: Record<string, OutlineNode>
+  contentNodes: Record<string, ContentNode>
 }
 
 export interface OutlineTree {
@@ -16,15 +17,8 @@ export interface OutlineTree {
   collapsed: boolean;
 }
 
-export interface OutlineNode {
-  id: string;
-  created: number;
-  type: 'text',
-  content: string,
-  strikethrough: boolean;
-};
-
 export class Outline {
+  accountId: string;
   data: RawOutline;
 
   constructor(outlineData: RawOutline) {
@@ -184,13 +178,15 @@ export class Outline {
     }
   }
 
-  createSiblingNode(targetNode: string, nodeData?: OutlineNode) {
-    const outlineNode: OutlineNode = nodeData || {
+  createSiblingNode(targetNode: string, nodeData?: ContentNode) {
+    const outlineNode: ContentNode = nodeData || {
       id: uuid(),
-      created: Date.now(),
+      accountId: this.accountId,
+      created: new Date(),
+      lastUpdated: null,
       type: 'text',
       content: '---',
-      strikethrough: false
+      archiveDate: null
     };
 
     this.data.contentNodes[outlineNode.id] = outlineNode;
@@ -215,13 +211,15 @@ export class Outline {
   }
 
   createChildNode(currentNode: string, nodeId?: string) {
-    const node: OutlineNode = nodeId ? this.data.contentNodes[nodeId] :
+    const node: ContentNode = nodeId ? this.data.contentNodes[nodeId] :
     {
       id: uuid(),
-      created: Date.now(),
+      accountId: this.accountId,
+      created: new Date(),
+      lastUpdated: null,
       type: 'text',
       content: '---',
-      strikethrough: false
+      archiveDate: null
     };
 
     if(!nodeId) {
@@ -296,15 +294,17 @@ export class Outline {
       return this.render();
     }
     const collapse = node.collapsed ? 'collapsed': 'expanded';
-    const content: OutlineNode = this.data.contentNodes[node.id] || {
+    const content: ContentNode = this.data.contentNodes[node.id] || {
       id: node.id,
-      created: Date.now(),
+      accountId: this.accountId,
+      created: new Date(),
+      lastUpdated: null,
       type: 'text',
       content: '',
-      strikethrough: false
+      archiveDate: null
     };
 
-    const strikethrough = content.strikethrough ? 'strikethrough' : '';
+    const strikethrough = content.archiveDate ? 'strikethrough' : '';
 
     let html = `<div class="node ${collapse} ${strikethrough}" data-id="${node.id}" id="id-${node.id}">
     <div class="nodeContent" data-type="${content.type}">
