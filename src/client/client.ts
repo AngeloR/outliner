@@ -211,7 +211,8 @@ keyboardJS.withContext('navigation', () => {
     e.preventDefault();
     // toggle "strikethrough" of node
     cursor.get().classList.toggle('strikethrough');
-    outline.data.contentNodes[cursor.getIdOfNode()].strikethrough = cursor.get().classList.contains('strikethrough');
+    outline.data.contentNodes[cursor.getIdOfNode()].archiveDate = cursor.get().classList.contains('strikethrough') ? new Date(): null;
+    api.saveContentNode(outline.data.contentNodes[cursor.getIdOfNode()]);
     save();
   });
 
@@ -224,6 +225,7 @@ keyboardJS.withContext('navigation', () => {
     cursor.get().outerHTML = html;
 
     cursor.set(`#id-${res.node.id}`);
+    api.saveContentNode(res.node);
     save();
   });
   
@@ -246,6 +248,7 @@ keyboardJS.withContext('navigation', () => {
     }
 
     cursor.set(`#id-${res.node.id}`);
+    api.saveContentNode(res.node);
     save();
   });
 
@@ -342,8 +345,6 @@ function saveImmediate() {
   localStorage.setItem(outline.data.id, JSON.stringify(outline.data));
   localStorage.setItem('activeOutline', outline.data.id);
   state.delete('saveTimeout');
-
-  api.syncOutlineFromLocal(outline.data);
 }
 
 function save() {

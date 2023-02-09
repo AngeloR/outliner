@@ -7,7 +7,7 @@
     "collapsed": false,
     "children": [
       {
-        "id": "000001",
+        "id": "e067419a-85c3-422d-b8c4-41690be4450d",
         "collapsed": false,
         "children": []
       },
@@ -173,8 +173,8 @@
     ]
   },
   "contentNodes": {
-    "000001": {
-      "id": "000001",
+    "e067419a-85c3-422d-b8c4-41690be4450d": {
+      "id": "e067419a-85c3-422d-b8c4-41690be4450d",
       "created": 1674409747467,
       "type": "text",
       "content": "**Welcome to my Outliner**<br>"

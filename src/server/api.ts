@@ -2,6 +2,7 @@ import fastify from 'fastify';
 import cors from '@fastify/cors';
 import formbody from '@fastify/formbody';
 
+import * as _ from 'lodash';
 import * as envVars from 'dotenv';
 import { v4 as uuid } from 'uuid';
 import { Storage } from './storage';
@@ -188,7 +189,7 @@ app.get('/account/:accountId/outline/:outlineId', async req => {
 
   const account = await validateActivatedAccount(accountId, token)
 
-  return await prisma.outline.findUnique({
+  const outline = await prisma.outline.findUnique({
     where: {
       id_accountId: {
         id: outlineId,
@@ -196,6 +197,24 @@ app.get('/account/:accountId/outline/:outlineId', async req => {
       }
     }
   });
+
+  const str = JSON.stringify(outline.tree);
+  const contentIds = str.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi);
+
+  const contentNodes = await prisma.contentNode.findMany({
+    where: {
+      id: {
+        in: contentIds
+      }
+    }
+  });
+
+  return {
+    outline,
+    contentNodes: _.keyBy(contentNodes, n => {
+      return n.id
+    })
+  }
 });
 
 // this endpoint is used to create an outline. If the outline already exists 

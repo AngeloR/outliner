@@ -1,5 +1,6 @@
 import {RawOutline, OutlineTree, OutlineNode} from "../lib/outline";
 import { map } from 'lodash';
+import {Modal} from "./lib/modal";
 
 
 export class ApiClient {
@@ -25,15 +26,61 @@ export class ApiClient {
       }
     }
 
-    const syncFromRemote = confirm('Do you want to sync your outline from the server, overwriting your local copy?');
 
-    if(syncFromRemote) {
-      this.syncOutlineFromRemote()
+    if(this.isAuthenticated()) {
+      this.firstTimeLoad();
     }
+  }
+
+  async firstTimeLoad() {
+    const outlines = await this.listRemoteOutlines();
+
+    const modal = new Modal({
+      title: 'Remote Outlines',
+      escapeExitable: true
+    }, `
+    <p>We found some outlines on the server that you can resume</p>
+    <table>
+    <thead>
+      <tr>
+      <th>Outline</th>
+      <th>Last Modified</th>
+      <th></td>
+      </tr>
+    </thead>
+    <tbody>
+    ${outlines.map(outline => {
+      return `
+      <tr>
+      <td>${outline.name}</td>
+      <td>${outline.lastUpdated ? outline.lastUpdated : outline.createdDate}</td>
+      <td><a href="#" data-outline-id="${outline.id}" class="load-outline">Load</a></td>
+      </tr>
+      `
+    })}
+    </tbody>
+    </table>
+    `);
+
+
+    modal.show();
+    document.querySelectorAll('.load-outline').forEach(e => {
+      const el = e as HTMLElement;
+      el.addEventListener('click', this.loadOutline.bind(this));
+    });
+  }
+
+  async loadOutline(e) {
+    const el = e.target as HTMLElement;
+    const outlineId = el.getAttribute('data-outline-id');
+
+    const data = await this.get(`/account/${this.accountId}/outline/${outlineId}`);
+
+    console.log('load outline', data);
   }
   
   async get<T>(endpoint: string): Promise<T> {
-    const res = await fetch(`${this.apiHost}${endpoint}?=token=${this.authToken}`);
+    const res = await fetch(`${this.apiHost}${endpoint}?token=${this.authToken}`);
     return await res.json() as T;
   }
 
@@ -62,7 +109,7 @@ export class ApiClient {
   }
 
   isAuthenticated() {
-    return this.authToken.length > 0;
+    return this.authToken?.length > 0;
   }
 
   async createNewOutline(id: string) {
@@ -74,7 +121,12 @@ export class ApiClient {
   }
 
   async listRemoteOutlines() {
-    return this.get(`/account/${this.accountId}/outline`);
+    return this.get<{
+      id: string,
+      createdDate: string,
+      lastUpdated: string,
+      name: string
+    }[]>(`/account/${this.accountId}/outline`);
   }
 
   async saveContentNode(content: OutlineNode) {
@@ -92,7 +144,7 @@ export class ApiClient {
         return {
           id: node.id,
           type: node.type,
-          archiveDate: node.strikethrough ? Date.now() : null,
+          archiveDate: node.archiveDate,
           content: node.content
         }
       })
