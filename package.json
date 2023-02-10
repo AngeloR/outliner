@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "npx webpack -w",
     "api": "npx nodemon src/server/api.ts",
+    "start": "npx ts-node src/server/api.ts",
     "build": "ENVIRONMENT=production npx webpack"
   },
   "devDependencies": {
