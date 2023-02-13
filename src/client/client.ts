@@ -6,38 +6,19 @@ import {helpModal} from './help';
 import { Search } from './search';
 import { ApiClient } from './api';
 import * as _ from 'lodash';
+import {loadOutlineModal} from './modals/outline-loader';
 
-let outlineData = rawOutline;
-// reset the ID so everyone gets a unique outliner
-// if they don't have one saved in local storage
-if(localStorage.getItem('activeOutline')) {
-  const outlineId = localStorage.getItem('activeOutline');
-  outlineData = JSON.parse(localStorage.getItem(outlineId));
-}
 
+let outline: Outline;
+let cursor: Cursor = new Cursor();
+let api: ApiClient = new ApiClient();
+let search: Search = new Search();
 const state = new Map<string, any>();
-const outline = new Outline(outlineData as unknown as RawOutline);
-outliner().innerHTML = outline.render();
 
-const cursor = new Cursor();
-// place the cursor at the top!
-cursor.set('.node');
-
-const api = new ApiClient();
-api.createDirStructureIfNotExists();
-
-const search = new Search();
 
 function outliner() {
   return document.querySelector('#outliner');
 }
-
-document.getElementById('display-help').addEventListener('click', e => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  helpModal.show();
-});
 
 // move down
 keyboardJS.withContext('navigation', () => {
@@ -298,22 +279,6 @@ keyboardJS.withContext('editing', () => {
   });
 });
 
-keyboardJS.setContext('navigation');
-
-search.createIndex({
-  id: "string",
-  created: "number",
-  lastUpdated: "number",
-  type: "string",
-  content: "string",
-  archived: "boolean",
-  archivedDate: "number",
-  deleted: "boolean",
-  deletedDate: "number"
-}).then(async () => {
-  await search.indexBatch(outline.data.contentNodes);
-  search.bindEvents();
-});
 
 function recursivelyExpand(start: HTMLElement) {
   if(start.classList.contains('node')) {
@@ -348,5 +313,59 @@ function save() {
   }
 }
 
+async function main() {
+  // instead of loading up a "fresh" outline, lets show them the 
+  // outline selector modal!
+  await api.createDirStructureIfNotExists();
+  const entries = await api.listAllOutlines();
 
-save();
+  const modal = loadOutlineModal(entries);
+
+  modal.on('rendered', () => {
+    document.getElementById('create-outline').addEventListener('click', async e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      outline = new Outline(rawOutline as unknown as RawOutline); 
+
+      outliner().innerHTML = outline.render();
+      cursor.resetCursor();
+
+      keyboardJS.setContext('navigation');
+      modal.remove();
+    });
+
+    document.querySelectorAll('.load-outline').forEach(e => {
+      const el = e as HTMLElement;
+      el.addEventListener('click', async e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const filename = (e.target as HTMLElement).getAttribute('data-outline-filename');
+
+        const raw = await api.loadOutline(filename.split('.json')[0])
+
+        outline = new Outline(raw);
+        outliner().innerHTML = outline.render();
+        cursor.resetCursor();
+
+        document.getElementById('outliner-name').innerHTML = outline.data.name;
+
+        keyboardJS.setContext('navigation');
+        modal.remove();
+
+        search.createIndex({
+          id: "string",
+          content: "string",
+        }).then(async () => {
+          await search.indexBatch(outline.data.contentNodes);
+          search.bindEvents();
+        });
+      });
+    });
+  });
+
+  modal.show();
+}
+
+main();

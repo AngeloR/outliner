@@ -5,6 +5,10 @@ export class Cursor {
 
   }
 
+  resetCursor() {
+    this.set('.node');
+  }
+
   get() {
     return document.querySelector('.cursor');
   }

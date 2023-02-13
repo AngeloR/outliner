@@ -15,7 +15,7 @@ export class CustomEventEmitter {
   }
 
   emit(...args: any[]) {
-    const eventName = args.unshift();
+    const eventName = args.shift();
     if(this.eventMap[eventName]) {
       this.eventMap[eventName].forEach(handler => {
         handler(...args);

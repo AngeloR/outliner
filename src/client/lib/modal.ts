@@ -35,7 +35,6 @@ export class Modal extends CustomEventEmitter {
 
   makeExitable() {
     keyboardJS.withContext(this.options.keyboardContext, () => {
-        console.debug(`Bind exit for context to [${this.options.keyboardContext}]`)
       keyboardJS.bind('escape', e => {
         this.remove();
       })
@@ -88,7 +87,6 @@ export class Modal extends CustomEventEmitter {
     else {
       document.querySelector('body').innerHTML += this.renderModal();
       if(this.options.keyboardContext) {
-        console.debug(`Switch keyboard context to [${this.options.keyboardContext}]`)
         keyboardJS.setContext(this.options.keyboardContext);
 
         if(this.options.escapeExitable) {
