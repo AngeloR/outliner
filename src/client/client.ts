@@ -316,7 +316,6 @@ keyboardJS.withContext('editing', () => {
 
 keyboardJS.setContext('navigation');
 
-/*
 search.createIndex({
   id: "string",
   created: "number",
@@ -331,7 +330,6 @@ search.createIndex({
   await search.indexBatch(outline.data.contentNodes);
   search.bindEvents();
 });
-*/
 
 function recursivelyExpand(start: HTMLElement) {
   if(start.classList.contains('node')) {
