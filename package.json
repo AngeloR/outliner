@@ -1,12 +1,15 @@
 {
   "name": "outline-browser",
   "scripts": {
-    "dev": "npx webpack -w",
+    "dev": "npx serve public",
+    "webpack-local": "npx webpack -w",
     "api": "npx nodemon src/server/api.ts",
     "start": "npx ts-node src/server/api.ts",
-    "build": "ENVIRONMENT=production npx webpack"
+    "build": "ENVIRONMENT=production npx webpack",
+    "tauri": "tauri"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.2.3",
     "@types/keyboardjs": "^2.5.0",
     "@types/lodash": "^4.14.191",
     "@types/marked": "^4.0.8",
@@ -28,6 +31,7 @@
     "@fastify/formbody": "^7.4.0",
     "@lyrasearch/lyra": "^0.4.3",
     "@prisma/client": "^4.9.0",
+    "@tauri-apps/api": "^1.2.0",
     "dotenv": "^16.0.3",
     "keyboardjs": "^2.7.0",
     "lodash": "^4.17.21",

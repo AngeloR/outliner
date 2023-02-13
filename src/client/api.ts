@@ -1,5 +1,5 @@
 import {RawOutline, OutlineTree, Outline} from "../lib/outline";
-import { ContentNode } from "@prisma/client";
+import { ContentNode } from "../lib/contentNode";
 import { map } from 'lodash';
 import {Modal} from "./lib/modal";
 import {Cursor} from "./cursor";

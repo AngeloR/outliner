@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
-import { ContentNode } from '@prisma/client';
+import { ContentNode } from './contentNode';
 
 export interface RawOutline {
   id: string;
@@ -24,14 +24,11 @@ export class Outline {
   constructor(outlineData: RawOutline) {
     this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
 
-    if(this.data.id === '000000') {
-      this.resetOutlineForUse();
-    }
+    this.data.contentNodes = _.keyBy(_.map(this.data.contentNodes, n => ContentNode.Create(n)), n => n.id);
   }
 
-  resetOutlineForUse() {
-    this.data.id = uuid();
-    this.data.tree.id = this.data.id;
+  isTreeRoot(id: string) {
+    return this.data.id === id;
   }
 
   findNodeInTree(root: OutlineTree, id: string, action: (item: OutlineTree, parent: OutlineTree) => void, runState: boolean = false) {
@@ -179,16 +176,7 @@ export class Outline {
   }
 
   createSiblingNode(targetNode: string, nodeData?: ContentNode) {
-    const outlineNode: ContentNode = nodeData || {
-      id: uuid(),
-      accountId: this.accountId,
-      created: new Date(),
-      lastUpdated: null,
-      type: 'text',
-      content: '---',
-      archiveDate: null
-    };
-
+    const outlineNode: ContentNode = nodeData || new ContentNode(uuid());
     this.data.contentNodes[outlineNode.id] = outlineNode;
 
     let parentNode: OutlineTree;
@@ -211,16 +199,7 @@ export class Outline {
   }
 
   createChildNode(currentNode: string, nodeId?: string) {
-    const node: ContentNode = nodeId ? this.data.contentNodes[nodeId] :
-    {
-      id: uuid(),
-      accountId: this.accountId,
-      created: new Date(),
-      lastUpdated: null,
-      type: 'text',
-      content: '---',
-      archiveDate: null
-    };
+    const node: ContentNode = nodeId ? this.data.contentNodes[nodeId] : new ContentNode(uuid());
 
     if(!nodeId) {
       this.data.contentNodes[node.id] = node;
@@ -274,8 +253,17 @@ export class Outline {
     this.data.contentNodes[id].content = content;
   }
 
+  getContentNode(id: string) {
+    if(!this.data.contentNodes[id]) {
+      console.log(this.data.contentNodes);
+      throw new Error(`Invalid Node ${id}`);
+    }
+
+    return this.data.contentNodes[id];
+  }
+
   renderContent(nodeId: string): string {
-    let node = this.data.contentNodes[nodeId];
+    let node = this.getContentNode(nodeId)
     let content: string;
     switch(node.type) {
       case 'text':
@@ -290,21 +278,16 @@ export class Outline {
   }
 
   renderNode(node: OutlineTree): string {
-    if(node.id === '000000') {
+    if(node.id === this.data.id) {
       return this.render();
     }
+    console.log(`rendering node`, node, this.data);
+    const content: ContentNode = this.data.contentNodes[node.id];
     const collapse = node.collapsed ? 'collapsed': 'expanded';
-    const content: ContentNode = this.data.contentNodes[node.id] || {
-      id: node.id,
-      accountId: this.accountId,
-      created: new Date(),
-      lastUpdated: null,
-      type: 'text',
-      content: '',
-      archiveDate: null
-    };
 
-    const strikethrough = content.archiveDate ? 'strikethrough' : '';
+    console.log(content, node.id);
+
+    const strikethrough = content.isArchived() ? 'strikethrough' : '';
 
     let html = `<div class="node ${collapse} ${strikethrough}" data-id="${node.id}" id="id-${node.id}">
     <div class="nodeContent" data-type="${content.type}">

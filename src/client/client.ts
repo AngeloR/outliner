@@ -4,8 +4,8 @@ import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
 import {helpModal} from './help';
 import { Search } from './search';
-import { signupModal } from './signup';
-import { ApiClient } from './api';
+//import { ApiClient } from './api';
+import * as _ from 'lodash';
 
 const outlineVersion = '0.0.1';
 
@@ -36,7 +36,7 @@ const cursor = new Cursor();
 // place the cursor at the top!
 cursor.set('.node');
 
-const api = new ApiClient(outline, cursor);
+//const api = new ApiClient(outline, cursor);
 
 
 const search = new Search();
@@ -52,13 +52,6 @@ document.getElementById('display-help').addEventListener('click', e => {
   helpModal.show();
 });
 
-document.getElementById('remote-sync')?.addEventListener('click', async e => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  signupModal.show();
-});
-
 // move down
 keyboardJS.withContext('navigation', () => {
   keyboardJS.bind('j', e => {
@@ -72,7 +65,7 @@ keyboardJS.withContext('navigation', () => {
         const res = outline.swapNodeWithNextSibling(cursor.getIdOfNode());
         const html = outline.renderNode(res.parentNode);
 
-        if(res.parentNode.id === '000000') {
+        if(outline.isTreeRoot(res.parentNode.id)) {
           cursor.get().parentElement.innerHTML = html;
         }
         else {
@@ -105,7 +98,7 @@ keyboardJS.withContext('navigation', () => {
         // re-render the parent node and display that!
         const html = outline.renderNode(res.parentNode);
 
-        if(res.parentNode.id === '000000') {
+        if(outline.isTreeRoot(res.parentNode.id)) {
           cursor.get().parentElement.innerHTML = html;
         }
         else {
@@ -130,7 +123,7 @@ keyboardJS.withContext('navigation', () => {
       const res = outline.lowerNodeToChild(cursor.getIdOfNode());
       const html = outline.renderNode(res.oldParentNode);
 
-      if(res.oldParentNode.id === '000000') {
+      if(outline.isTreeRoot(res.oldParentNode.id)) {
         cursor.get().parentElement.innerHTML = html;
       }
       else {
@@ -158,7 +151,7 @@ keyboardJS.withContext('navigation', () => {
 
         const html = outline.renderNode(res.parentNode);
 
-        if(res.parentNode.id === '000000') {
+        if(outline.isTreeRoot(res.parentNode.id)) {
           cursor.get().parentElement.parentElement.innerHTML = html;
         }
         else {
@@ -226,8 +219,8 @@ keyboardJS.withContext('navigation', () => {
     e.preventDefault();
     // toggle "strikethrough" of node
     cursor.get().classList.toggle('strikethrough');
-    outline.data.contentNodes[cursor.getIdOfNode()].archiveDate = cursor.get().classList.contains('strikethrough') ? new Date(): null;
-    api.saveContentNode(outline.data.contentNodes[cursor.getIdOfNode()]);
+    outline.getContentNode(cursor.getIdOfNode()).toggleArchiveStatus();
+    // api.saveContentNode(outline.data.contentNodes[cursor.getIdOfNode()]);
     save();
   });
 
@@ -240,7 +233,7 @@ keyboardJS.withContext('navigation', () => {
     cursor.get().outerHTML = html;
 
     cursor.set(`#id-${res.node.id}`);
-    api.saveContentNode(res.node);
+    // api.saveContentNode(res.node);
     save();
   });
   
@@ -254,8 +247,10 @@ keyboardJS.withContext('navigation', () => {
 
     const res = outline.createSiblingNode(cursor.getIdOfNode());
 
+    console.log('Create node as sibling of', res);
+
     const html = outline.renderNode(res.parentNode);
-    if(res.parentNode.id === '000000') {
+    if(outline.isTreeRoot(res.parentNode.id)) {
       cursor.get().parentElement.innerHTML = html;
     }
     else {
@@ -263,7 +258,7 @@ keyboardJS.withContext('navigation', () => {
     }
 
     cursor.set(`#id-${res.node.id}`);
-    api.saveContentNode(res.node);
+    // api.saveContentNode(res.node);
     save();
   });
 
@@ -278,7 +273,7 @@ keyboardJS.withContext('navigation', () => {
     // the previous sibling!
     const prevSibling = cursor.get().previousElementSibling;
     const nextSibling = cursor.get().nextElementSibling;
-    if(res.parentNode.id === '000000') {
+    if(outline.isTreeRoot(res.parentNode.id)) {
       cursor.get().parentElement.innerHTML = html;
     }
     else {
@@ -315,24 +310,28 @@ keyboardJS.withContext('editing', () => {
     contentNode.innerHTML = outline.renderContent(cursor.getIdOfNode());
 
     // push the new node content remotely!
-    api.saveContentNode(outline.data.contentNodes[cursor.getIdOfNode()])
+    // api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
   });
 });
 
 keyboardJS.setContext('navigation');
 
+/*
 search.createIndex({
   id: "string",
-  accountId: "string",
-  created: "string",
-  "lastUpdated": "string",
+  created: "number",
+  lastUpdated: "number",
   type: "string",
   content: "string",
-  archiveDate: "string"
+  archived: "boolean",
+  archivedDate: "number",
+  deleted: "boolean",
+  deletedDate: "number"
 }).then(async () => {
   await search.indexBatch(outline.data.contentNodes);
   search.bindEvents();
 });
+*/
 
 function recursivelyExpand(start: HTMLElement) {
   if(start.classList.contains('node')) {
@@ -361,7 +360,7 @@ search.onTermSelection = (docId: string) => {
 function save() {
   if(!state.has('saveTimeout')) {
     state.set('saveTimeout', setTimeout(async () => {
-      await api.save();
+      // await api.save();
       state.delete('saveTimeout');
     }, 2000));
   }

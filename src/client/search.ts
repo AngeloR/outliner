@@ -1,6 +1,6 @@
 import { create, insert, insertBatch, search } from '@lyrasearch/lyra';
 import { map } from 'lodash';
-import { ContentNode } from '@prisma/client';
+import { ContentNode } from '../lib/contentNode';
 import keyboardJS from 'keyboardjs';
 import {isVisible} from './dom';
 
@@ -135,7 +135,8 @@ export class Search {
   }
 
   indexBatch(docs: Record<string, ContentNode>) {
-    return insertBatch(this.db, map(docs, doc => doc as any));
+    console.log(docs);
+    return insertBatch(this.db, map(docs, doc => doc.toJson() as any));
   }
 
   search(term: string) {
