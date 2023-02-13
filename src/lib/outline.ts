@@ -3,6 +3,10 @@ import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
 import { ContentNode } from './contentNode';
 
+const SupportedVersions = [
+  '0.0.1'
+];
+
 export interface RawOutline {
   id: string;
   version: string;
@@ -23,6 +27,10 @@ export class Outline {
 
   constructor(outlineData: RawOutline) {
     this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
+
+    if(!SupportedVersions.includes(this.data.version)) {
+      throw new Error(`The version of outliner you have doesn't support opening this doc`);
+    }
 
     this.data.contentNodes = _.keyBy(_.map(this.data.contentNodes, n => ContentNode.Create(n)), n => n.id);
   }
