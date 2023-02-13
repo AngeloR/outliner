@@ -135,7 +135,6 @@ export class Search {
   }
 
   indexBatch(docs: Record<string, ContentNode>) {
-    console.log(docs);
     return insertBatch(this.db, map(docs, doc => doc.toJson() as any));
   }
 

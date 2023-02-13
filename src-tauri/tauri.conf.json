@@ -13,7 +13,10 @@
   "tauri": {
     "allowlist": {
       "fs": {
-        "scope": ["$APPDATA"],
+        "scope": [
+          "$APPLOCALDATA/outliner/*",
+          "$APPLOCALDATA/outliner/contentNodes/*"
+        ],
         "all": true
       },
       "all": false

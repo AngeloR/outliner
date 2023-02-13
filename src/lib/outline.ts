@@ -5,6 +5,7 @@ import { ContentNode } from './contentNode';
 
 export interface RawOutline {
   id: string;
+  version: string;
   created: number;
   name: string;
   tree: OutlineTree;
@@ -18,7 +19,6 @@ export interface OutlineTree {
 }
 
 export class Outline {
-  accountId: string;
   data: RawOutline;
 
   constructor(outlineData: RawOutline) {
@@ -255,7 +255,6 @@ export class Outline {
 
   getContentNode(id: string) {
     if(!this.data.contentNodes[id]) {
-      console.log(this.data.contentNodes);
       throw new Error(`Invalid Node ${id}`);
     }
 
@@ -281,11 +280,8 @@ export class Outline {
     if(node.id === this.data.id) {
       return this.render();
     }
-    console.log(`rendering node`, node, this.data);
     const content: ContentNode = this.data.contentNodes[node.id];
     const collapse = node.collapsed ? 'collapsed': 'expanded';
-
-    console.log(content, node.id);
 
     const strikethrough = content.isArchived() ? 'strikethrough' : '';
 

@@ -4,21 +4,8 @@ import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
 import {helpModal} from './help';
 import { Search } from './search';
-//import { ApiClient } from './api';
+import { ApiClient } from './api';
 import * as _ from 'lodash';
-
-const outlineVersion = '0.0.1';
-
-// migrate between versions!
-switch(localStorage.getItem('outlineVersion')) {
-  case '0.0.1':
-    // user is on current version
-    break;
-  default:
-    // no outline -> migrate to v0.0.1
-    localStorage.setItem('outlineVersion', outlineVersion);
-    break;
-}
 
 let outlineData = rawOutline;
 // reset the ID so everyone gets a unique outliner
@@ -36,8 +23,8 @@ const cursor = new Cursor();
 // place the cursor at the top!
 cursor.set('.node');
 
-//const api = new ApiClient(outline, cursor);
-
+const api = new ApiClient();
+api.createDirStructureIfNotExists();
 
 const search = new Search();
 
@@ -220,7 +207,7 @@ keyboardJS.withContext('navigation', () => {
     // toggle "strikethrough" of node
     cursor.get().classList.toggle('strikethrough');
     outline.getContentNode(cursor.getIdOfNode()).toggleArchiveStatus();
-    // api.saveContentNode(outline.data.contentNodes[cursor.getIdOfNode()]);
+    api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
     save();
   });
 
@@ -233,7 +220,7 @@ keyboardJS.withContext('navigation', () => {
     cursor.get().outerHTML = html;
 
     cursor.set(`#id-${res.node.id}`);
-    // api.saveContentNode(res.node);
+    api.saveContentNode(res.node);
     save();
   });
   
@@ -247,8 +234,6 @@ keyboardJS.withContext('navigation', () => {
 
     const res = outline.createSiblingNode(cursor.getIdOfNode());
 
-    console.log('Create node as sibling of', res);
-
     const html = outline.renderNode(res.parentNode);
     if(outline.isTreeRoot(res.parentNode.id)) {
       cursor.get().parentElement.innerHTML = html;
@@ -258,7 +243,7 @@ keyboardJS.withContext('navigation', () => {
     }
 
     cursor.set(`#id-${res.node.id}`);
-    // api.saveContentNode(res.node);
+    api.saveContentNode(res.node);
     save();
   });
 
@@ -280,14 +265,13 @@ keyboardJS.withContext('navigation', () => {
       cursor.get().parentElement.outerHTML = html;
     }
 
-    if(prevSibling.getAttribute('data-id')) {
+    if(prevSibling && prevSibling.getAttribute('data-id')) {
       cursor.set(`#id-${prevSibling.getAttribute('data-id')}`);
     }
-    else if(nextSibling.getAttribute('data-id')) {
+    else if(nextSibling && nextSibling.getAttribute('data-id')) {
       cursor.set(`#id-${nextSibling.getAttribute('data-id')}`);
     }
     else {
-      console.log(res.parentNode.id);
       cursor.set(`#id-${res.parentNode.id}`);
     }
 
@@ -310,7 +294,7 @@ keyboardJS.withContext('editing', () => {
     contentNode.innerHTML = outline.renderContent(cursor.getIdOfNode());
 
     // push the new node content remotely!
-    // api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
+     api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
   });
 });
 
@@ -358,7 +342,7 @@ search.onTermSelection = (docId: string) => {
 function save() {
   if(!state.has('saveTimeout')) {
     state.set('saveTimeout', setTimeout(async () => {
-      // await api.save();
+      await api.saveOutline(outline);
       state.delete('saveTimeout');
     }, 2000));
   }
