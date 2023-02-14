@@ -80,7 +80,7 @@ export class ApiClient {
   }
 
   async saveOutline(outline: Outline) {
-    await fs.writeTextFile(`outliner/${outline.data.id}.json`, JSON.stringify({
+    await fs.writeTextFile(`outliner/${outline.data.name}.json`, JSON.stringify({
       id: outline.data.id,
       version: outline.data.version,
       created: outline.data.created,
