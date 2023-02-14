@@ -14,6 +14,24 @@ function loadOutline(filename: string) {
   console.log(filename);
 }
 
+export async function openOutlineSelector() {
+  const selected = await Dialog.open({
+    multiple: false,
+    defaultPath: await path.join(await path.appLocalDataDir(), 'outliner'),
+    directory: false,
+    title: 'Select Outline',
+    filters: [{
+      name: 'JSON',
+      extensions: ['json']
+    }]
+  });
+
+  return {
+    filename: await path.basename(selected.toString()),
+    fqp: selected
+  };
+}
+
 export function loadOutlineModal() {
   const modal = new Modal({
     title: 'Load Outline',
@@ -21,7 +39,6 @@ export function loadOutlineModal() {
   }, loaderHTML);
 
   modal.on('rendered', () => {
-
     document.getElementById('create-outline').addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
@@ -32,19 +49,10 @@ export function loadOutlineModal() {
       e.preventDefault();
       e.stopPropagation();
 
-      const selected = await Dialog.open({
-        multiple: false,
-        defaultPath: await path.join(await path.appLocalDataDir(), 'outliner'),
-        directory: false,
-        title: 'Select Outline',
-        filters: [{
-          name: 'JSON',
-          extensions: ['json']
-        }]
-      });
+      const selected = await openOutlineSelector();
 
       if(selected) {
-        modal.emit('loadOutline', await path.basename(selected.toString()))
+        modal.emit('loadOutline', selected.filename);
       }
     });
   });

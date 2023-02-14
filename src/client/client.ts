@@ -6,7 +6,7 @@ import {helpModal} from './help';
 import { Search } from './search';
 import { ApiClient } from './api';
 import * as _ from 'lodash';
-import {loadOutlineModal} from './modals/outline-loader';
+import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
 
 
 let outline: Outline;
@@ -258,6 +258,21 @@ keyboardJS.withContext('navigation', () => {
 
     save();
   });
+
+  keyboardJS.bind('ctrl + o', async e => {
+    const res = await openOutlineSelector();
+    const raw = await api.loadOutline(res.filename.split('.json')[0])
+
+    outline = new Outline(raw);
+    outliner().innerHTML = outline.render();
+    cursor.resetCursor();
+    await search.reset();
+    await search.indexBatch(outline.data.contentNodes);
+
+    document.getElementById('outlineName').innerHTML = outline.data.name;
+
+    keyboardJS.setContext('navigation');
+  });
 });
 
 keyboardJS.withContext('editing', () => {
@@ -278,7 +293,6 @@ keyboardJS.withContext('editing', () => {
      api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
   });
 });
-
 
 function recursivelyExpand(start: HTMLElement) {
   if(start.classList.contains('node')) {
@@ -313,6 +327,14 @@ function save() {
   }
 }
 
+function todaysDate() {
+  const now = new Date();
+
+  const month = now.getMonth() + 1;
+
+  return `${now.getFullYear()}-${month < 9 ? '0':''}${month}-${now.getDate()}`;
+}
+
 async function main() {
   await api.createDirStructureIfNotExists();
   const modal = loadOutlineModal();
@@ -321,9 +343,12 @@ async function main() {
   // or opening an existing one
   modal.on('createOutline', () => {
       outline = new Outline(rawOutline as unknown as RawOutline); 
+      outline.data.name = `Outline - ${todaysDate()}`;
+
 
       outliner().innerHTML = outline.render();
       cursor.resetCursor();
+      document.getElementById('outlineName').innerHTML = outline.data.name;
 
       keyboardJS.setContext('navigation');
       modal.remove();
@@ -336,7 +361,7 @@ async function main() {
     outliner().innerHTML = outline.render();
     cursor.resetCursor();
 
-    document.getElementById('outliner-name').innerHTML = outline.data.name;
+    document.getElementById('outlineName').innerHTML = outline.data.name;
 
     keyboardJS.setContext('navigation');
     modal.remove();

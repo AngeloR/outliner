@@ -18,6 +18,7 @@ export class Search {
   db: any;
   debounce: any;
   state: 'ready' | 'notready'
+  schema: Record<string, any>
 
   onTermSelection: any;
   constructor() {
@@ -25,6 +26,8 @@ export class Search {
   }
 
   async createIndex(schema: Record<string, any>) {
+    this.schema = schema;
+    this.state = 'notready';
     this.db = await create({
       schema
     });
@@ -143,5 +146,9 @@ export class Search {
       term: term.trim(),
       properties: ["content"]
     });
+  }
+
+  reset() {
+    return this.createIndex(this.schema);
   }
 }
