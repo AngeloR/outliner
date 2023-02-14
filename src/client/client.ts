@@ -314,18 +314,12 @@ function save() {
 }
 
 async function main() {
-  // instead of loading up a "fresh" outline, lets show them the 
-  // outline selector modal!
   await api.createDirStructureIfNotExists();
-  const entries = await api.listAllOutlines();
+  const modal = loadOutlineModal();
 
-  const modal = loadOutlineModal(entries);
-
-  modal.on('rendered', () => {
-    document.getElementById('create-outline').addEventListener('click', async e => {
-      e.preventDefault();
-      e.stopPropagation();
-
+  // on launch, give the user the option of creating a new outline 
+  // or opening an existing one
+  modal.on('createOutline', () => {
       outline = new Outline(rawOutline as unknown as RawOutline); 
 
       outliner().innerHTML = outline.render();
@@ -333,35 +327,26 @@ async function main() {
 
       keyboardJS.setContext('navigation');
       modal.remove();
-    });
+  });
 
-    document.querySelectorAll('.load-outline').forEach(e => {
-      const el = e as HTMLElement;
-      el.addEventListener('click', async e => {
-        e.preventDefault();
-        e.stopPropagation();
+  modal.on('loadOutline', async filename => {
+    const raw = await api.loadOutline(filename.split('.json')[0])
 
-        const filename = (e.target as HTMLElement).getAttribute('data-outline-filename');
+    outline = new Outline(raw);
+    outliner().innerHTML = outline.render();
+    cursor.resetCursor();
 
-        const raw = await api.loadOutline(filename.split('.json')[0])
+    document.getElementById('outliner-name').innerHTML = outline.data.name;
 
-        outline = new Outline(raw);
-        outliner().innerHTML = outline.render();
-        cursor.resetCursor();
+    keyboardJS.setContext('navigation');
+    modal.remove();
 
-        document.getElementById('outliner-name').innerHTML = outline.data.name;
-
-        keyboardJS.setContext('navigation');
-        modal.remove();
-
-        search.createIndex({
-          id: "string",
-          content: "string",
-        }).then(async () => {
-          await search.indexBatch(outline.data.contentNodes);
-          search.bindEvents();
-        });
-      });
+    search.createIndex({
+      id: "string",
+      content: "string",
+    }).then(async () => {
+      await search.indexBatch(outline.data.contentNodes);
+      search.bindEvents();
     });
   });
 

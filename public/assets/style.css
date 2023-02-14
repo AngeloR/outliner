@@ -55,6 +55,14 @@ footer {
   margin-bottom: 1rem;
 }
 
+.clearfix {
+  clear: both;
+}
+
+#outlineLoader .button:first-child {
+  margin-right: 2rem;
+}
+
 /** SEARCH **/
 #search-query {
   width: 100%;
@@ -178,4 +186,19 @@ kbd {
   padding: 0 5px;
   line-height: 1rem;
   white-space: nowrap;
+}
+
+.button {
+  background-color: #eee;
+  text-align: center;
+  padding: 2rem;
+  border: solid 1px #888;
+  text-decoration: none;
+  display: inline-block;
+}
+.button:hover {
+  background-color: #f4f4f4;
+}
+.button.large {
+  padding: 2rem;
 }
