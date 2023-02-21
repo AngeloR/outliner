@@ -1,4 +1,5 @@
 import * as Dialog from '@tauri-apps/api/dialog';
+import {P} from '@tauri-apps/api/event-2a9960e7';
 import * as path from '@tauri-apps/api/path';
 import { Modal } from '../lib/modal';
 
@@ -26,9 +27,16 @@ export async function openOutlineSelector() {
     }]
   });
 
+  if(selected) {
+    return {
+      filename: await path.basename(selected.toString()),
+      fqp: selected
+    };
+  }
+
   return {
-    filename: await path.basename(selected.toString()),
-    fqp: selected
+    filename: null,
+    fqp: null
   };
 }
 

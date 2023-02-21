@@ -1,4 +1,4 @@
-import { create, insert, insertBatch, search } from '@lyrasearch/lyra';
+import { create, insert, insertBatch, search, remove } from '@lyrasearch/lyra';
 import { map } from 'lodash';
 import { ContentNode } from '../lib/contentNode';
 import keyboardJS from 'keyboardjs';
@@ -23,6 +23,7 @@ export class Search {
   onTermSelection: any;
   constructor() {
     this.state = 'notready';
+    this.bindEvents();
   }
 
   async createIndex(schema: Record<string, any>) {
@@ -39,6 +40,7 @@ export class Search {
       keyboardJS.bind('escape', e => {
         document.querySelector('.modal').remove();
         keyboardJS.setContext('navigation');
+        console.log('switch to navigation context');
       });
 
       keyboardJS.bind('down', e => {
@@ -146,6 +148,11 @@ export class Search {
       term: term.trim(),
       properties: ["content"]
     });
+  }
+
+  async replace(doc: ContentNode) {
+    await remove(this.db, doc.id);
+    await insert(this.db, doc.toJson() as Record<string, any>);
   }
 
   reset() {

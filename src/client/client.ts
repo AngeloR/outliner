@@ -23,6 +23,7 @@ function outliner() {
 // move down
 keyboardJS.withContext('navigation', () => {
   keyboardJS.bind('j', e => {
+    console.log('yes');
     // move cursor down
     // if shift key is held, swap the node with its next sibling
     const sibling = cursor.get().nextElementSibling;
@@ -261,6 +262,9 @@ keyboardJS.withContext('navigation', () => {
 
   keyboardJS.bind('ctrl + o', async e => {
     const res = await openOutlineSelector();
+    if(!res.filename || !res.filename.length) {
+      return;
+    }
     const raw = await api.loadOutline(res.filename.split('.json')[0])
 
     outline = new Outline(raw);
@@ -270,8 +274,6 @@ keyboardJS.withContext('navigation', () => {
     await search.indexBatch(outline.data.contentNodes);
 
     document.getElementById('outlineName').innerHTML = outline.data.name;
-
-    keyboardJS.setContext('navigation');
   });
 });
 
@@ -290,7 +292,10 @@ keyboardJS.withContext('editing', () => {
     contentNode.innerHTML = outline.renderContent(cursor.getIdOfNode());
 
     // push the new node content remotely!
-     api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
+    api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
+
+    // reset the doc in search
+    search.replace(outline.getContentNode(cursor.getIdOfNode()));
   });
 });
 
@@ -371,7 +376,6 @@ async function main() {
       content: "string",
     }).then(async () => {
       await search.indexBatch(outline.data.contentNodes);
-      search.bindEvents();
     });
   });
 
