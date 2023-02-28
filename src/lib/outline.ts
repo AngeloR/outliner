@@ -2,6 +2,11 @@ import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
 import { ContentNode } from './contentNode';
+import * as parsers from './md-parser';
+
+marked.use({ renderer: { 
+  link: parsers.link 
+}});
 
 const SupportedVersions = [
   '0.0.1'
