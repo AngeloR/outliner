@@ -2,7 +2,7 @@ import { create, insert, insertBatch, search, remove } from '@lyrasearch/lyra';
 import { map } from 'lodash';
 import { ContentNode } from '../lib/contentNode';
 import keyboardJS from 'keyboardjs';
-import {isVisible} from './dom';
+import {isVisible} from '../dom';
 
 const searchModal = `
 <div class="modal">

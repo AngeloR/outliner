@@ -1,12 +1,14 @@
-import { Outline, RawOutline } from '../lib/outline';
+import { Outline, RawOutline } from './lib/outline';
 import { Cursor } from './cursor';
 import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
-import {helpModal} from './help';
-import { Search } from './search';
+import {helpModal} from './modals/help';
+import { Search } from './modals/search';
 import { ApiClient } from './api';
 import * as _ from 'lodash';
 import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
+import {bindOutlineRenamer} from 'modals/rename-outline';
+import {Modal} from 'lib/modal';
 
 
 let outline: Outline;
@@ -344,8 +346,6 @@ async function main() {
   await api.createDirStructureIfNotExists();
   const modal = loadOutlineModal();
 
-  // on launch, give the user the option of creating a new outline 
-  // or opening an existing one
   modal.on('createOutline', () => {
       outline = new Outline(rawOutline as unknown as RawOutline); 
       outline.data.name = `Outline - ${todaysDate()}`;
@@ -357,6 +357,18 @@ async function main() {
 
       keyboardJS.setContext('navigation');
       modal.remove();
+      bindOutlineRenamer().on('attemptedRename', async (newName) => {
+        try {
+          await api.renameOutline(outline.data.name, newName);
+          outline.data.name = newName;
+          await api.saveOutline(outline);
+          document.getElementById('outlineName').innerHTML = outline.data.name;
+          modal.remove();
+        }
+        catch(e) {
+          console.log(e);
+        }
+      });
   });
 
   modal.on('loadOutline', async filename => {
@@ -370,6 +382,18 @@ async function main() {
 
     keyboardJS.setContext('navigation');
     modal.remove();
+    bindOutlineRenamer().on('attemptedRename', async (newName: string, modal: Modal) => {
+      try {
+        await api.renameOutline(outline.data.name, newName);
+        outline.data.name = newName;
+        await api.saveOutline(outline);
+        document.getElementById('outlineName').innerHTML = outline.data.name;
+        modal.remove();
+      }
+      catch(e) {
+        console.log(e);
+      }
+    });
 
     search.createIndex({
       id: "string",

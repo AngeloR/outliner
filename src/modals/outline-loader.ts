@@ -1,5 +1,4 @@
 import * as Dialog from '@tauri-apps/api/dialog';
-import {P} from '@tauri-apps/api/event-2a9960e7';
 import * as path from '@tauri-apps/api/path';
 import { Modal } from '../lib/modal';
 
@@ -50,7 +49,7 @@ export function loadOutlineModal() {
     document.getElementById('create-outline').addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
-      modal.emit('createOutline', e);
+      modal.emit('createOutline', [e]);
     });
 
     document.getElementById('open-outline-selector').addEventListener('click', async e => {
@@ -60,7 +59,7 @@ export function loadOutlineModal() {
       const selected = await openOutlineSelector();
 
       if(selected) {
-        modal.emit('loadOutline', selected.filename);
+        modal.emit('loadOutline', [selected.filename]);
       }
     });
   });

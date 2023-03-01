@@ -1,5 +1,6 @@
-import {OutlineTree, Outline, RawOutline} from "../lib/outline";
-import { ContentNode, IContentNode } from "../lib/contentNode";
+import {OutlineTree, Outline, RawOutline} from "./lib/outline";
+import { ContentNode, IContentNode } from "./lib/contentNode";
+import { slugify } from './lib/string';
 import * as _ from 'lodash';
 import * as fs from '@tauri-apps/api/fs';
 
@@ -19,6 +20,7 @@ type OutlineDataStorage = {
 }
 
 export class ApiClient {
+  dir = fs.BaseDirectory.AppLocalData;
   constructor() {
   }
 
@@ -43,8 +45,8 @@ export class ApiClient {
     });
   }
 
-  async loadOutline(outlineId: string): Promise<RawOutline> {
-    const raw = await fs.readTextFile(`outliner/${outlineId}.json`, {
+  async loadOutline(outlineName: string): Promise<RawOutline> {
+    const raw = await fs.readTextFile(`outliner/${slugify(outlineName)}.json`, {
       dir: fs.BaseDirectory.AppLocalData
     });
 
@@ -80,7 +82,7 @@ export class ApiClient {
   }
 
   async saveOutline(outline: Outline) {
-    await fs.writeTextFile(`outliner/${outline.data.name}.json`, JSON.stringify({
+    await fs.writeTextFile(`outliner/${slugify(outline.data.name)}.json`, JSON.stringify({
       id: outline.data.id,
       version: outline.data.version,
       created: outline.data.created,
@@ -89,6 +91,14 @@ export class ApiClient {
     }), {
       dir: fs.BaseDirectory.AppLocalData,
     });
+  }
+
+  async renameOutline(oldName: string, newName: string) {
+    if(newName.length && oldName !== newName) {
+      return fs.renameFile(`outliner/${slugify(oldName)}.json`, `outliner/${slugify(newName)}.json`, {
+        dir: fs.BaseDirectory.AppLocalData
+      });
+    }
   }
 
   async saveContentNode(node: ContentNode) {

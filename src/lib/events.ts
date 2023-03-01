@@ -14,11 +14,10 @@ export class CustomEventEmitter {
     this.eventMap[eventName].push(handler);
   }
 
-  emit(...args: any[]) {
-    const eventName = args.shift();
+  emit(eventName: string, args?: any[]) {
     if(this.eventMap[eventName]) {
       this.eventMap[eventName].forEach(handler => {
-        handler(...args);
+        handler.apply(null, args);
       });
     }
   }

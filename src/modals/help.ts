@@ -1,6 +1,5 @@
-import keyboardJS from 'keyboardjs';
 import { map } from 'lodash';
-import { Modal } from './lib/modal';
+import { Modal } from '../lib/modal';
 
 const keyboardCommands = {
   'h': 'Move the cursor to the Parent Element of the current node',
