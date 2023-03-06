@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
 import {bindOutlineRenamer} from 'modals/rename-outline';
 import {Modal} from 'lib/modal';
+import {random} from 'lodash';
 
 
 let outline: Outline;
@@ -277,6 +278,10 @@ keyboardJS.withContext('navigation', () => {
 
     document.getElementById('outlineName').innerHTML = outline.data.name;
   });
+
+  keyboardJS.bind('ctrl + n', async e => {
+    createNewOutline();
+  });
 });
 
 keyboardJS.withContext('editing', () => {
@@ -334,12 +339,24 @@ function save() {
   }
 }
 
+function createNewOutline() {
+  outline = new Outline(rawOutline as unknown as RawOutline); 
+  outline.data.name = `Outline - ${todaysDate()}`;
+
+
+  outliner().innerHTML = outline.render();
+  cursor.resetCursor();
+  document.getElementById('outlineName').innerHTML = outline.data.name;
+
+  keyboardJS.setContext('navigation');
+}
+
 function todaysDate() {
   const now = new Date();
 
   const month = now.getMonth() + 1;
 
-  return `${now.getFullYear()}-${month < 9 ? '0':''}${month}-${now.getDate()}`;
+  return `${now.getFullYear()}-${month < 9 ? '0':''}${month}-${now.getDate()}-${now.getMinutes()}`;
 }
 
 async function main() {
@@ -347,28 +364,20 @@ async function main() {
   const modal = loadOutlineModal();
 
   modal.on('createOutline', () => {
-      outline = new Outline(rawOutline as unknown as RawOutline); 
-      outline.data.name = `Outline - ${todaysDate()}`;
-
-
-      outliner().innerHTML = outline.render();
-      cursor.resetCursor();
-      document.getElementById('outlineName').innerHTML = outline.data.name;
-
-      keyboardJS.setContext('navigation');
-      modal.remove();
-      bindOutlineRenamer().on('attemptedRename', async (newName) => {
-        try {
-          await api.renameOutline(outline.data.name, newName);
-          outline.data.name = newName;
-          await api.saveOutline(outline);
-          document.getElementById('outlineName').innerHTML = outline.data.name;
-          modal.remove();
-        }
-        catch(e) {
-          console.log(e);
-        }
-      });
+    createNewOutline();
+    modal.remove();
+    bindOutlineRenamer().on('attemptedRename', async (newName) => {
+      try {
+        await api.renameOutline(outline.data.name, newName);
+        outline.data.name = newName;
+        await api.saveOutline(outline);
+        document.getElementById('outlineName').innerHTML = outline.data.name;
+        modal.remove();
+      }
+      catch(e) {
+        console.log(e);
+      }
+    });
   });
 
   modal.on('loadOutline', async filename => {
