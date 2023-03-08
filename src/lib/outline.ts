@@ -30,9 +30,18 @@ export interface OutlineTree {
   collapsed: boolean;
 }
 
+type DateStorage = {
+  nodeId: string;
+  date: DateTime;
+}
+
+type NodeID = string;
+type IsoDate = string;
+
 export class Outline {
   data: RawOutline;
-  dates: Record<string, DateTime[]>;
+  // we use this format for enforce easy uniqueness
+  dates: Record<IsoDate, Record<NodeID, DateStorage>>;
 
   constructor(outlineData: RawOutline) {
     this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
@@ -286,9 +295,25 @@ export class Outline {
       case 'text':
         content = marked.parse(node.content);
 
+        const now = DateTime.now();
         const foundDates = FindDate(node.content);
         if(foundDates.length) {
-          this.dates[node.id] = foundDates;
+          foundDates.forEach(d => {
+            // only deal with dates AFTER today
+            if(now.startOf('day').toMillis() > d.toMillis()) {
+              return;
+            }
+            if(!this.dates[d.toISODate()]) {
+              this.dates[d.toISODate()] = {};
+            }
+
+            if(!this.dates[d.toISODate()][node.id]) {
+              this.dates[d.toISODate()][node.id] = {
+                date: d,
+                nodeId: node.id
+              };
+            }
+          });
         }
         break;
       default: 
@@ -300,13 +325,25 @@ export class Outline {
   }
 
   renderDates() {
-    let html = _.map(this.dates, dates => {
-      return dates.map(date => {
-        return `<li>${date.toString()}</li>`
-      }).join("\n");
+    const sortedDates = _.sortBy(Object.keys(this.dates).map(d => DateTime.fromISO(d)), d => d.toSeconds());
+
+    let html = sortedDates.map(dateKey => {
+      return `<li><div class="date-header">${dateKey.toLocaleString({
+        weekday: 'long',
+        day: '2-digit',
+        month: 'short'
+      })}
+      </div>
+      <ol class="date-node-display">
+      ${_.map(this.dates[dateKey.toISODate()], d => {
+        return `<li class="date-node-substr">${this.getContentNode(d.nodeId).content.substr(0, 100)}</li>`;
+      }).join("\n")}
+      </ol>
+      </li>`;
     }).join("\n");
 
     $('#dates').innerHTML = `<ul>${html}</ul>`;
+   console.log(this.dates);
   }
 
   renderNode(node: OutlineTree): string {

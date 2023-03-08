@@ -3,6 +3,7 @@
  *
  * SEARCH
  * OUTLINER
+ * DATES
  * TEXTSTYLES
  */
 
@@ -38,8 +39,8 @@ nav li a, nav li a:visited {
 }
 
 #sidebar {
-  background-color: #ddd;
-  padding: 1rem;
+  padding: 0 1rem 1rem;
+  width: 20%;
 }
 
 footer {
@@ -171,7 +172,27 @@ a:visited {
 }
 
 
-
+/* DATES */
+#dates .date-header:first-child {
+  margin-top: 0;
+}
+.date-header {
+  font-weight: bold;
+  background-color: #547883;
+  padding: 0.5rem 1rem;
+}
+.date-node-substr {
+  font-weight: normal;
+  background-color: #eee;
+  padding: 0.5rem 1rem;
+  border: solid 0 #888;
+  border-bottom-width: 1px;
+  line-height: 1rem;
+  font-size: 0.8rem;
+}
+.date-node-display .date-node-substr:last-child {
+  border-bottom-width: 0px;
+}
 
 /* TEXTSTYLES */
 
