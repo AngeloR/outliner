@@ -9,6 +9,8 @@ import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
 import {bindOutlineRenamer} from 'modals/rename-outline';
 import {Modal} from 'lib/modal';
 import { AllShortcuts } from './keyboard-shortcuts/all';
+import { $ } from './dom';
+import { DateTime } from 'luxon';
 
 // help is a special shortcut that can't be included in the rest 
 // even though its the same Type
@@ -158,6 +160,13 @@ async function main() {
   });
 
   modal.show();
+
+  setTime();
+}
+
+function setTime() {
+  $('footer').innerHTML = DateTime.now().toLocaleString(DateTime.DATETIME_FULL);
+  setTimeout(setTime, 1000 * 60);
 }
 
 main();
