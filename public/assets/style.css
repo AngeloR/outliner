@@ -9,9 +9,7 @@
 body {
   background-color: #eee;
   font-size: 1rem;
-  margin: 4rem;
-  margin: 0 auto;
-  width: 780px;
+  margin: 0 10%;
   padding: 2rem 1rem;
   font-family: sans-serif;
 }
@@ -25,6 +23,23 @@ nav li {
 }
 nav li a, nav li a:visited {
   color: #098bd9;
+}
+
+#app {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+#outliner {
+  flex-grow: 4;
+  align-items: flex-start;
+}
+
+#sidebar {
+  background-color: #ddd;
+  padding: 1rem;
 }
 
 footer {
@@ -63,6 +78,10 @@ footer {
   margin-right: 2rem;
 }
 
+.hidden {
+  display: none;
+}
+
 /** SEARCH **/
 #search-query {
   width: 100%;
@@ -88,7 +107,6 @@ footer {
   background-color: #fff;
   border: solid 1px #ddd;
   padding: 2rem 1rem;
-  margin: 2rem 0;
 }
 .node {
   margin: 0 1rem;
@@ -201,4 +219,12 @@ kbd {
 }
 .button.large {
   padding: 2rem;
+}
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px;
+}
+.cursor code {
+  color: #000;
 }

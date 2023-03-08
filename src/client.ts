@@ -9,8 +9,7 @@ import * as _ from 'lodash';
 import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
 import {bindOutlineRenamer} from 'modals/rename-outline';
 import {Modal} from 'lib/modal';
-import {random} from 'lodash';
-
+import { AllShortcuts } from './keyboard-shortcuts/all';
 
 let outline: Outline;
 let cursor: Cursor = new Cursor();
@@ -19,14 +18,27 @@ let search: Search = new Search();
 const state = new Map<string, any>();
 
 
+
 function outliner() {
   return document.querySelector('#outliner');
 }
 
+AllShortcuts.forEach(def => {
+  keyboardJS.withContext(def.context, () => {
+    keyboardJS.bind(def.keys, async e => {
+      def.action({
+        e: e,
+        outline,
+        cursor,
+        api
+      });
+    });
+  });
+});
+
 // move down
 keyboardJS.withContext('navigation', () => {
   keyboardJS.bind('j', e => {
-    console.log('yes');
     // move cursor down
     // if shift key is held, swap the node with its next sibling
     const sibling = cursor.get().nextElementSibling;
@@ -87,10 +99,6 @@ keyboardJS.withContext('navigation', () => {
   });
 
   keyboardJS.bind('l', e => {
-    // if the node is collapsed, we can't go into its children
-    if(cursor.isNodeCollapsed()) {
-      return;
-    }
     if(e.shiftKey) {
       const res = outline.lowerNodeToChild(cursor.getIdOfNode());
       const html = outline.renderNode(res.oldParentNode);
@@ -104,6 +112,9 @@ keyboardJS.withContext('navigation', () => {
       cursor.set(`#id-${res.targetNode.id}`);
     }
     else {
+      if(cursor.isNodeCollapsed()) {
+        return;
+      }
       const children = cursor.get().querySelector('.node');
       if(children) {
         cursor.set(`#id-${children.getAttribute('data-id')}`);
@@ -297,6 +308,7 @@ keyboardJS.withContext('editing', () => {
     outline.updateContent(cursor.getIdOfNode(), contentNode.innerHTML.trim());
     // re-render this node!
     contentNode.innerHTML = outline.renderContent(cursor.getIdOfNode());
+    outline.renderDates();
 
     // push the new node content remotely!
     api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));

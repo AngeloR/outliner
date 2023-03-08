@@ -1,5 +1,6 @@
 import { map } from 'lodash';
 import { Modal } from '../lib/modal';
+import { sidebarToggle } from '../keyboard-shortcuts/sidebar-toggle';
 
 const keyboardCommands = {
   'h': 'Move the cursor to the Parent Element of the current node',
@@ -17,7 +18,8 @@ const keyboardCommands = {
   'i': 'Enter "edit" mode, and place the cursor at the start of the editable content',
   '$': 'Enter "edit" mode, and place the cursor at the end of the editable content',
   'escape': 'Exit the current mode and return to "navigation" mode',
-  '?': 'Display this help dialogue'
+  '?': 'Display this help dialogue',
+  [sidebarToggle.keys[0]]: sidebarToggle.description
 };
 
 const modalHTML = `
