@@ -21,7 +21,9 @@ type OutlineDataStorage = {
 
 export class ApiClient {
   dir = fs.BaseDirectory.AppLocalData;
+  state: Map<string, any>;
   constructor() {
+    this.state = new Map<string, any>();
   }
 
   async createDirStructureIfNotExists() {
@@ -105,5 +107,15 @@ export class ApiClient {
     await fs.writeTextFile(`outliner/contentNodes/${node.id}.json`, JSON.stringify(node.toJson()), {
       dir: fs.BaseDirectory.AppLocalData
     });
+  }
+
+  save(outline: Outline) {
+    if(!this.state.has('saveTimeout')) {
+      this.state.set('saveTimeout', setTimeout(async () => {
+        await this.saveOutline(outline);
+        this.state.delete('saveTimeout');
+      }, 2000));
+    }
+
   }
 }
