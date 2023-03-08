@@ -2,10 +2,13 @@ import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
 import { ContentNode } from './contentNode';
-import * as parsers from './md-parser';
+import * as markdownParsers from './parsers/md-parser';
+import { DateTime } from 'luxon';
+import { FindDate } from './parsers/date';
+import {$} from 'dom';
 
 marked.use({ renderer: { 
-  link: parsers.link 
+  link: markdownParsers.link 
 }});
 
 const SupportedVersions = [
@@ -29,9 +32,11 @@ export interface OutlineTree {
 
 export class Outline {
   data: RawOutline;
+  dates: Record<string, DateTime[]>;
 
   constructor(outlineData: RawOutline) {
     this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
+    this.dates = {};
 
     if(!SupportedVersions.includes(this.data.version)) {
       throw new Error(`The version of outliner you have doesn't support opening this doc`);
@@ -280,6 +285,11 @@ export class Outline {
     switch(node.type) {
       case 'text':
         content = marked.parse(node.content);
+
+        const foundDates = FindDate(node.content);
+        if(foundDates.length) {
+          this.dates[node.id] = foundDates;
+        }
         break;
       default: 
         content = node.content;
@@ -287,6 +297,16 @@ export class Outline {
     }
 
     return content;
+  }
+
+  renderDates() {
+    let html = _.map(this.dates, dates => {
+      return dates.map(date => {
+        return `<li>${date.toString()}</li>`
+      }).join("\n");
+    }).join("\n");
+
+    $('#dates').innerHTML = `<ul>${html}</ul>`;
   }
 
   renderNode(node: OutlineTree): string {
@@ -303,7 +323,9 @@ export class Outline {
       ${this.renderContent(node.id)}
     </div>
     ${node.children.length ? _.map(node.children, this.renderNode.bind(this)).join("\n") : ''}
-    </div>`
+    </div>`;
+
+    this.renderDates();
 
     return html;
   }
