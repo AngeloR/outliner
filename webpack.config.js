@@ -2,7 +2,7 @@
 const path = require('path');
 const tsconfigPaths = require('tsconfig-paths-webpack-plugin');
 
-const env = process.env.ENVIRONMENT || 'development';
+const env = process.env.ENVIRONMENT || 'production';
 
 module.exports = {
   mode: env,

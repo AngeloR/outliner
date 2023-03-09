@@ -3,16 +3,44 @@
  *
  * SEARCH
  * OUTLINER
+ * DATES
  * TEXTSTYLES
  */
 
 body {
   background-color: #eee;
   font-size: 1rem;
-  margin: 4rem;
-  margin: 0 auto;
-  width: 780px;
+  margin: 0 10%;
   padding: 2rem 1rem;
+  font-family: sans-serif;
+}
+
+nav {
+  text-align: right;
+}
+nav li {
+  display: inline-block;
+  padding: 0 1rem;
+}
+nav li a, nav li a:visited {
+  color: #098bd9;
+}
+
+#app {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+#outliner {
+  flex-grow: 4;
+  align-items: flex-start;
+}
+
+#sidebar {
+  padding: 0 1rem 1rem;
+  min-width: 20%;
 }
 
 footer {
@@ -37,6 +65,22 @@ footer {
 }
 .modal-content > h1 {
   margin-bottom: 1rem;
+}
+.modal-content p {
+  line-height: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.clearfix {
+  clear: both;
+}
+
+#outlineLoader .button:first-child {
+  margin-right: 2rem;
+}
+
+.hidden {
+  display: none;
 }
 
 /** SEARCH **/
@@ -64,7 +108,6 @@ footer {
   background-color: #fff;
   border: solid 1px #ddd;
   padding: 2rem 1rem;
-  margin: 2rem 0;
 }
 .node {
   margin: 0 1rem;
@@ -129,7 +172,27 @@ a:visited {
 }
 
 
-
+/* DATES */
+#dates .date-header:first-child {
+  margin-top: 0;
+}
+.date-header {
+  font-weight: bold;
+  background-color: #547883;
+  padding: 0.5rem 1rem;
+}
+.date-node-substr {
+  font-weight: normal;
+  background-color: #eee;
+  padding: 0.5rem 1rem;
+  border: solid 0 #888;
+  border-bottom-width: 1px;
+  line-height: 1rem;
+  font-size: 0.8rem;
+}
+.date-node-display .date-node-substr:last-child {
+  border-bottom-width: 0px;
+}
 
 /* TEXTSTYLES */
 
@@ -162,4 +225,27 @@ kbd {
   padding: 0 5px;
   line-height: 1rem;
   white-space: nowrap;
+}
+
+.button {
+  background-color: #eee;
+  text-align: center;
+  padding: 2rem;
+  border: solid 1px #888;
+  text-decoration: none;
+  display: inline-block;
+}
+.button:hover {
+  background-color: #f4f4f4;
+}
+.button.large {
+  padding: 2rem;
+}
+code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 2px;
+}
+.cursor code {
+  color: #000;
 }

@@ -1,13 +1,27 @@
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
+import { ContentNode } from './contentNode';
+import * as markdownParsers from './parsers/md-parser';
+import { DateTime } from 'luxon';
+import { FindDate } from './parsers/date';
+import {$} from 'dom';
+
+marked.use({ renderer: { 
+  link: markdownParsers.link 
+}});
+
+const SupportedVersions = [
+  '0.0.1'
+];
 
 export interface RawOutline {
   id: string;
+  version: string;
   created: number;
   name: string;
   tree: OutlineTree;
-  contentNodes: Record<string, OutlineNode>
+  contentNodes: Record<string, ContentNode>
 }
 
 export interface OutlineTree {
@@ -16,19 +30,32 @@ export interface OutlineTree {
   collapsed: boolean;
 }
 
-export interface OutlineNode {
-  id: string;
-  created: number;
-  type: 'text',
-  content: string,
-  strikethrough: boolean;
-};
+type DateStorage = {
+  nodeId: string;
+  date: DateTime;
+}
+
+type NodeID = string;
+type IsoDate = string;
 
 export class Outline {
   data: RawOutline;
+  // we use this format for enforce easy uniqueness
+  dates: Record<IsoDate, Record<NodeID, DateStorage>>;
 
   constructor(outlineData: RawOutline) {
-    this.data = outlineData;
+    this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
+    this.dates = {};
+
+    if(!SupportedVersions.includes(this.data.version)) {
+      throw new Error(`The version of outliner you have doesn't support opening this doc`);
+    }
+
+    this.data.contentNodes = _.keyBy(_.map(this.data.contentNodes, n => ContentNode.Create(n)), n => n.id);
+  }
+
+  isTreeRoot(id: string) {
+    return this.data.id === id;
   }
 
   findNodeInTree(root: OutlineTree, id: string, action: (item: OutlineTree, parent: OutlineTree) => void, runState: boolean = false) {
@@ -175,15 +202,8 @@ export class Outline {
     }
   }
 
-  createSiblingNode(targetNode: string, nodeData?: OutlineNode) {
-    const outlineNode: OutlineNode = nodeData || {
-      id: uuid(),
-      created: Date.now(),
-      type: 'text',
-      content: '---',
-      strikethrough: false
-    };
-
+  createSiblingNode(targetNode: string, nodeData?: ContentNode) {
+    const outlineNode: ContentNode = nodeData || new ContentNode(uuid());
     this.data.contentNodes[outlineNode.id] = outlineNode;
 
     let parentNode: OutlineTree;
@@ -206,14 +226,7 @@ export class Outline {
   }
 
   createChildNode(currentNode: string, nodeId?: string) {
-    const node: OutlineNode = nodeId ? this.data.contentNodes[nodeId] :
-    {
-      id: uuid(),
-      created: Date.now(),
-      type: 'text',
-      content: '---',
-      strikethrough: false
-    };
+    const node: ContentNode = nodeId ? this.data.contentNodes[nodeId] : new ContentNode(uuid());
 
     if(!nodeId) {
       this.data.contentNodes[node.id] = node;
@@ -267,12 +280,41 @@ export class Outline {
     this.data.contentNodes[id].content = content;
   }
 
+  getContentNode(id: string) {
+    if(!this.data.contentNodes[id]) {
+      throw new Error(`Invalid Node ${id}`);
+    }
+
+    return this.data.contentNodes[id];
+  }
+
   renderContent(nodeId: string): string {
-    let node = this.data.contentNodes[nodeId];
+    let node = this.getContentNode(nodeId)
     let content: string;
     switch(node.type) {
       case 'text':
         content = marked.parse(node.content);
+
+        const now = DateTime.now();
+        const foundDates = FindDate(node.content);
+        if(foundDates.length) {
+          foundDates.forEach(d => {
+            // only deal with dates AFTER today
+            if(now.startOf('day').toMillis() > d.toMillis()) {
+              return;
+            }
+            if(!this.dates[d.toISODate()]) {
+              this.dates[d.toISODate()] = {};
+            }
+
+            if(!this.dates[d.toISODate()][node.id]) {
+              this.dates[d.toISODate()][node.id] = {
+                date: d,
+                nodeId: node.id
+              };
+            }
+          });
+        }
         break;
       default: 
         content = node.content;
@@ -282,27 +324,47 @@ export class Outline {
     return content;
   }
 
+  renderDates() {
+    const sortedDates = _.sortBy(Object.keys(this.dates).map(d => DateTime.fromISO(d)), d => d.toSeconds());
+
+    let html = sortedDates.map(dateKey => {
+      return `<li><div class="date-header">${dateKey.toLocaleString({
+        weekday: 'long',
+        day: '2-digit',
+        month: 'short'
+      })}
+      </div>
+      <ol class="date-node-display">
+      ${_.map(this.dates[dateKey.toISODate()], d => {
+        return `<li class="date-node-substr">
+        ${marked.parse(this.getContentNode(d.nodeId).content.substr(0, 100))}
+        </li>`;
+      }).join("\n")}
+      </ol>
+      </li>`;
+    }).join("\n");
+
+    $('#dates').innerHTML = `<ul>${html}</ul>`;
+   console.log(this.dates);
+  }
+
   renderNode(node: OutlineTree): string {
-    if(node.id === '000000') {
+    if(node.id === this.data.id) {
       return this.render();
     }
+    const content: ContentNode = this.data.contentNodes[node.id];
     const collapse = node.collapsed ? 'collapsed': 'expanded';
-    const content: OutlineNode = this.data.contentNodes[node.id] || {
-      id: node.id,
-      created: Date.now(),
-      type: 'text',
-      content: '',
-      strikethrough: false
-    };
 
-    const strikethrough = content.strikethrough ? 'strikethrough' : '';
+    const strikethrough = content.isArchived() ? 'strikethrough' : '';
 
     let html = `<div class="node ${collapse} ${strikethrough}" data-id="${node.id}" id="id-${node.id}">
     <div class="nodeContent" data-type="${content.type}">
       ${this.renderContent(node.id)}
     </div>
     ${node.children.length ? _.map(node.children, this.renderNode.bind(this)).join("\n") : ''}
-    </div>`
+    </div>`;
+
+    this.renderDates();
 
     return html;
   }

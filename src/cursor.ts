@@ -1,8 +1,12 @@
-import {isVisible} from "dom";
+import {isVisible} from "./dom";
 
 export class Cursor {
   constructor() {
 
+  }
+
+  resetCursor() {
+    this.set('.node');
   }
 
   get() {

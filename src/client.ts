@@ -1,303 +1,65 @@
-import { Outline, RawOutline } from './outline';
+import { Outline, RawOutline } from './lib/outline';
 import { Cursor } from './cursor';
 import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
-import {showHelp} from 'help';
-import { Search } from './search';
+import { Search } from './modals/search';
+import { ApiClient } from './api';
+import * as _ from 'lodash';
+import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
+import {bindOutlineRenamer} from 'modals/rename-outline';
+import {Modal} from 'lib/modal';
+import { AllShortcuts } from './keyboard-shortcuts/all';
+import { $ } from './dom';
+import { DateTime } from 'luxon';
 
-let outlineData = rawOutline;
-if(localStorage.getItem('activeOutline')) {
-  const outlineId = localStorage.getItem('activeOutline');
-  outlineData = JSON.parse(localStorage.getItem(outlineId));
-}
+// help is a special shortcut that can't be included in the rest 
+// even though its the same Type
+import { help } from './keyboard-shortcuts/help';
 
-const state = new Map<string, any>();
-const outline = new Outline(outlineData as unknown as RawOutline);
-outliner().innerHTML = outline.render();
-
-const cursor = new Cursor();
-// place the cursor at the top!
-cursor.set('.node');
-
-const search = new Search();
+let outline: Outline;
+let cursor: Cursor = new Cursor();
+let api: ApiClient = new ApiClient();
+let search: Search = new Search();
 
 function outliner() {
   return document.querySelector('#outliner');
 }
 
-document.getElementById('display-help').addEventListener('click', e => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  showHelp();
+AllShortcuts.concat(help).forEach(def => {
+  keyboardJS.withContext(def.context, () => {
+    keyboardJS.bind(def.keys, async e => {
+      def.action({
+        e: e,
+        outline,
+        cursor,
+        api,
+        search
+      });
+    });
+  });
 });
 
 // move down
 keyboardJS.withContext('navigation', () => {
-  keyboardJS.bind('j', e => {
-    // move cursor down
-    // if shift key is held, swap the node with its next sibling
-    const sibling = cursor.get().nextElementSibling;
-
-    if(sibling) {
-      if(e.shiftKey) {
-        // swap this node with its previous sibling
-        const res = outline.swapNodeWithNextSibling(cursor.getIdOfNode());
-        const html = outline.renderNode(res.parentNode);
-
-        if(res.parentNode.id === '000000') {
-          cursor.get().parentElement.innerHTML = html;
-        }
-        else {
-          cursor.get().parentElement.outerHTML = html;
-        }
-
-        cursor.set(`#id-${res.targetNode.id}`);
-        save();
-      }
-      else {
-        cursor.set(`#id-${sibling.getAttribute('data-id')}`);
-      }
-    }
-  });
-
-
-  keyboardJS.bind('shift + /', e => {
-    showHelp();
-  });
-
-  keyboardJS.bind('k', e => {
-    // move cursor up
-    // if shift key is held, swap the node with its previous sibling
-    const sibling = cursor.get().previousElementSibling;
-
-    if(sibling && !sibling.classList.contains('nodeContent')) {
-      if(e.shiftKey) {
-        // swap this node with its previous sibling
-        const res = outline.swapNodeWithPreviousSibling(cursor.getIdOfNode());
-        // re-render the parent node and display that!
-        const html = outline.renderNode(res.parentNode);
-
-        if(res.parentNode.id === '000000') {
-          cursor.get().parentElement.innerHTML = html;
-        }
-        else {
-          cursor.get().parentElement.outerHTML = html;
-        }
-
-        cursor.set(`#id-${res.targetNode.id}`);
-        save();
-      }
-      else {
-        cursor.set(`#id-${sibling.getAttribute('data-id')}`);
-      }
-    }
-  });
-
-  keyboardJS.bind('l', e => {
-    // if the node is collapsed, we can't go into its children
-    if(cursor.isNodeCollapsed()) {
+  keyboardJS.bind('ctrl + o', async e => {
+    const res = await openOutlineSelector();
+    if(!res.filename || !res.filename.length) {
       return;
     }
-    if(e.shiftKey) {
-      const res = outline.lowerNodeToChild(cursor.getIdOfNode());
-      const html = outline.renderNode(res.oldParentNode);
+    const raw = await api.loadOutline(res.filename.split('.json')[0])
 
-      if(res.oldParentNode.id === '000000') {
-        cursor.get().parentElement.innerHTML = html;
-      }
-      else {
-        cursor.get().parentElement.outerHTML = html;
-      }
-      cursor.set(`#id-${res.targetNode.id}`);
-    }
-    else {
-      const children = cursor.get().querySelector('.node');
-      if(children) {
-        cursor.set(`#id-${children.getAttribute('data-id')}`);
-      }
-    }
+    outline = new Outline(raw);
+    outliner().innerHTML = outline.render();
+    cursor.resetCursor();
+    await search.reset();
+    await search.indexBatch(outline.data.contentNodes);
+
+    document.getElementById('outlineName').innerHTML = outline.data.name;
   });
 
-  keyboardJS.bind('h', e => {
-    const parent = cursor.get().parentElement;
-    if(parent && parent.classList.contains('node')) {
-      if(e.shiftKey) {
-        if(outline.data.tree.children.map(n => n.id).includes(cursor.getIdOfNode())) {
-          // if this is a top level item, we can't elevate any further
-          return;
-        }
-        const res = outline.liftNodeToParent(cursor.getIdOfNode());
-
-        const html = outline.renderNode(res.parentNode);
-
-        if(res.parentNode.id === '000000') {
-          cursor.get().parentElement.parentElement.innerHTML = html;
-        }
-        else {
-          cursor.get().parentElement.parentElement.outerHTML = html;
-        }
-
-        cursor.set(`#id-${res.targetNode.id}`);
-        save();
-      }
-      else {
-        cursor.set(`#id-${parent.getAttribute('data-id')}`);
-      }
-    }
+  keyboardJS.bind('ctrl + n', async e => {
+    createNewOutline();
   });
-
-  keyboardJS.bind('z', e => {
-    // toggle collapse
-    if(cursor.isNodeExpanded()) {
-      cursor.collapse();
-      outline.fold(cursor.getIdOfNode());
-    }
-    else if(cursor.isNodeCollapsed()) {
-      cursor.expand();
-      outline.unfold(cursor.getIdOfNode());
-    }
-    save();
-  });
-
-  keyboardJS.bind('shift + 4', e => {
-    e.preventDefault();
-    // switch to editing mode
-    cursor.get().classList.add('hidden-cursor');
-    const contentNode = cursor.get().querySelector('.nodeContent') as HTMLElement;
-
-    // swap the content to the default!
-    contentNode.innerHTML = outline.data.contentNodes[cursor.getIdOfNode()].content;
-    contentNode.contentEditable = "true";
-
-    const range = document.createRange();
-    range.selectNodeContents(contentNode);
-    range.collapse(false);
-
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    contentNode.focus();
-    keyboardJS.setContext('editing');
-  });
-
-  keyboardJS.bind('i', e => {
-    e.preventDefault();
-    // switch to editing mode
-    cursor.get().classList.add('hidden-cursor');
-    const contentNode = cursor.get().querySelector('.nodeContent') as HTMLElement;
-
-    // swap the content to the default!
-    contentNode.innerHTML = outline.data.contentNodes[cursor.getIdOfNode()].content;
-    contentNode.contentEditable = "true";
-    contentNode.focus();
-    keyboardJS.setContext('editing');
-  });
-
-  keyboardJS.bind('shift + x', e => {
-    e.preventDefault();
-    // toggle "strikethrough" of node
-    cursor.get().classList.toggle('strikethrough');
-    outline.data.contentNodes[cursor.getIdOfNode()].strikethrough = cursor.get().classList.contains('strikethrough');
-    save();
-  });
-
-  keyboardJS.bind('tab', e => {
-    e.preventDefault();
-
-    const res = outline.createChildNode(cursor.getIdOfNode());
-    const html = outline.renderNode(res.parentNode);
-
-    cursor.get().outerHTML = html;
-
-    cursor.set(`#id-${res.node.id}`);
-    save();
-  });
-  
-  keyboardJS.bind('enter', e => {
-    // create a new node as a sibling of the selected node
-    if(e.shiftKey) {
-      return;
-    }
-    e.preventDefault();
-    e.preventRepeat();
-
-    const res = outline.createSiblingNode(cursor.getIdOfNode());
-
-    const html = outline.renderNode(res.parentNode);
-    if(res.parentNode.id === '000000') {
-      cursor.get().parentElement.innerHTML = html;
-    }
-    else {
-      cursor.get().parentElement.outerHTML = html;
-    }
-
-    cursor.set(`#id-${res.node.id}`);
-    save();
-  });
-
-  keyboardJS.bind('d', e => {
-    // deleting a node requires d + shift
-    if(!e.shiftKey) {
-      return;
-    }
-
-    const res = outline.removeNode(cursor.getIdOfNode());
-    const html = outline.renderNode(res.parentNode);
-    // the previous sibling!
-    const prevSibling = cursor.get().previousElementSibling;
-    const nextSibling = cursor.get().nextElementSibling;
-    if(res.parentNode.id === '000000') {
-      cursor.get().parentElement.innerHTML = html;
-    }
-    else {
-      cursor.get().parentElement.outerHTML = html;
-    }
-
-    if(prevSibling.getAttribute('data-id')) {
-      cursor.set(`#id-${prevSibling.getAttribute('data-id')}`);
-    }
-    else if(nextSibling.getAttribute('data-id')) {
-      cursor.set(`#id-${nextSibling.getAttribute('data-id')}`);
-    }
-    else {
-      console.log(res.parentNode.id);
-      cursor.set(`#id-${res.parentNode.id}`);
-    }
-
-    save();
-  });
-});
-
-keyboardJS.withContext('editing', () => {
-  keyboardJS.bind(['esc', 'enter'], e => {
-    cursor.get().classList.remove('hidden-cursor');
-
-    const contentNode = cursor.get().querySelector('.nodeContent') as HTMLElement;
-
-    contentNode.contentEditable = "false";
-    contentNode.blur();
-    keyboardJS.setContext('navigation');
-
-    outline.updateContent(cursor.getIdOfNode(), contentNode.innerHTML.trim());
-    // re-render this node!
-    contentNode.innerHTML = outline.renderContent(cursor.getIdOfNode());
-    save();
-  });
-});
-
-keyboardJS.setContext('navigation');
-
-search.createIndex({
-  id: "string",
-  created: "number",
-  type: "string",
-  content: "string",
-  strikethrough: "boolean"
-}).then(async () => {
-  await search.indexBatch(outline.data.contentNodes);
-  search.bindEvents();
 });
 
 function recursivelyExpand(start: HTMLElement) {
@@ -321,21 +83,90 @@ search.onTermSelection = (docId: string) => {
   recursivelyExpand(document.getElementById(`id-${docId}`).parentElement);
   cursor.set(`#id-${docId}`);
 
-  save();
+  api.save(outline);
 };
 
-function saveImmediate() {
-  localStorage.setItem(outline.data.id, JSON.stringify(outline.data));
-  localStorage.setItem('activeOutline', outline.data.id);
-  console.log('saved...', outline.data);
-  state.delete('saveTimeout');
+function createNewOutline() {
+  outline = new Outline(rawOutline as unknown as RawOutline); 
+  outline.data.name = `Outline - ${todaysDate()}`;
+
+
+  outliner().innerHTML = outline.render();
+  cursor.resetCursor();
+  document.getElementById('outlineName').innerHTML = outline.data.name;
+
+  keyboardJS.setContext('navigation');
 }
 
-function save() {
-  if(!state.has('saveTimeout')) {
-    state.set('saveTimeout', setTimeout(saveImmediate, 2000));
-  }
+function todaysDate() {
+  const now = new Date();
+
+  const month = now.getMonth() + 1;
+
+  return `${now.getFullYear()}-${month < 9 ? '0':''}${month}-${now.getDate()}-${now.getMinutes()}`;
 }
 
+async function main() {
+  await api.createDirStructureIfNotExists();
+  const modal = loadOutlineModal();
 
-save();
+  modal.on('createOutline', () => {
+    createNewOutline();
+    modal.remove();
+    bindOutlineRenamer().on('attemptedRename', async (newName) => {
+      try {
+        await api.renameOutline(outline.data.name, newName);
+        outline.data.name = newName;
+        await api.saveOutline(outline);
+        document.getElementById('outlineName').innerHTML = outline.data.name;
+        modal.remove();
+      }
+      catch(e) {
+        console.log(e);
+      }
+    });
+  });
+
+  modal.on('loadOutline', async filename => {
+    const raw = await api.loadOutline(filename.split('.json')[0])
+
+    outline = new Outline(raw);
+    outliner().innerHTML = outline.render();
+    cursor.resetCursor();
+
+    document.getElementById('outlineName').innerHTML = outline.data.name;
+
+    keyboardJS.setContext('navigation');
+    modal.remove();
+    bindOutlineRenamer().on('attemptedRename', async (newName: string, modal: Modal) => {
+      try {
+        await api.renameOutline(outline.data.name, newName);
+        outline.data.name = newName;
+        await api.saveOutline(outline);
+        document.getElementById('outlineName').innerHTML = outline.data.name;
+        modal.remove();
+      }
+      catch(e) {
+        console.log(e);
+      }
+    });
+
+    search.createIndex({
+      id: "string",
+      content: "string",
+    }).then(async () => {
+      await search.indexBatch(outline.data.contentNodes);
+    });
+  });
+
+  modal.show();
+
+  setTime();
+}
+
+function setTime() {
+  $('footer').innerHTML = DateTime.now().toLocaleString(DateTime.DATETIME_FULL);
+  setTimeout(setTime, 1000 * 60);
+}
+
+main();

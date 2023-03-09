@@ -1,8 +1,8 @@
-import { create, insert, insertBatch, search } from '@lyrasearch/lyra';
+import { create, insert, insertBatch, search, remove } from '@lyrasearch/lyra';
 import { map } from 'lodash';
-import { OutlineNode } from 'outline';
+import { ContentNode } from '../lib/contentNode';
 import keyboardJS from 'keyboardjs';
-import {isVisible} from 'dom';
+import {isVisible} from '../dom';
 
 const searchModal = `
 <div class="modal">
@@ -18,13 +18,17 @@ export class Search {
   db: any;
   debounce: any;
   state: 'ready' | 'notready'
+  schema: Record<string, any>
 
   onTermSelection: any;
   constructor() {
     this.state = 'notready';
+    this.bindEvents();
   }
 
   async createIndex(schema: Record<string, any>) {
+    this.schema = schema;
+    this.state = 'notready';
     this.db = await create({
       schema
     });
@@ -36,6 +40,7 @@ export class Search {
       keyboardJS.bind('escape', e => {
         document.querySelector('.modal').remove();
         keyboardJS.setContext('navigation');
+        console.log('switch to navigation context');
       });
 
       keyboardJS.bind('down', e => {
@@ -134,8 +139,8 @@ export class Search {
     return insert(this.db, doc)
   }
 
-  indexBatch(docs: Record<string, OutlineNode>) {
-    return insertBatch(this.db, map(docs, doc => doc as any));
+  indexBatch(docs: Record<string, ContentNode>) {
+    return insertBatch(this.db, map(docs, doc => doc.toJson() as any));
   }
 
   search(term: string) {
@@ -143,5 +148,14 @@ export class Search {
       term: term.trim(),
       properties: ["content"]
     });
+  }
+
+  async replace(doc: ContentNode) {
+    await remove(this.db, doc.id);
+    await insert(this.db, doc.toJson() as Record<string, any>);
+  }
+
+  reset() {
+    return this.createIndex(this.schema);
   }
 }
