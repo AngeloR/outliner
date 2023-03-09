@@ -5,6 +5,7 @@
     "dev": "npx serve public",
     "webpack-local": "ENVIRONMENT=development npx webpack -w",
     "build": "npx webpack",
+    "test": "npx jest",
     "tauri": "tauri"
   },
   "devDependencies": {
