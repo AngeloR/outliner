@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "npx serve public",
-    "webpack-local": "npx webpack -w",
-    "build": "ENVIRONMENT=production npx webpack",
+    "webpack-local": "ENVIRONMENT=development npx webpack -w",
+    "build": "npx webpack",
     "tauri": "tauri"
   },
   "devDependencies": {
