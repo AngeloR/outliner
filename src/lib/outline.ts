@@ -336,7 +336,9 @@ export class Outline {
       </div>
       <ol class="date-node-display">
       ${_.map(this.dates[dateKey.toISODate()], d => {
-        return `<li class="date-node-substr">${this.getContentNode(d.nodeId).content.substr(0, 100)}</li>`;
+        return `<li class="date-node-substr">
+        ${marked.parse(this.getContentNode(d.nodeId).content.substr(0, 100))}
+        </li>`;
       }).join("\n")}
       </ol>
       </li>`;
