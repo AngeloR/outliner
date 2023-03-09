@@ -1,8 +1,6 @@
 name: 'publish'
 
-on:
-  release:
-    types: [published]
+on: pull_request
 
 jobs:
   create-release:
@@ -28,8 +26,8 @@ jobs:
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `app-$GITHUB_REF`,
-              name: `Outliner $GITHUB_REF`,
+              tag_name: `release-${process.env.PACKAGE_VERSION}`,
+              name: `Outliner ${process.env.PACKAGE_VERSION}`,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
