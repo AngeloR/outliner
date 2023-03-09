@@ -23,6 +23,42 @@ describe('date', () => {
     expect(foundDates[1]).toEqual(DateTime.fromISO(dates[1]));
   });
 
+  it('finds dates at the start of a string', () => {
+    const date = '2023-03-07'
+    const str = `${date} is the date`;
+
+    const foundDates = FindDate(str);
+    expect(foundDates).toHaveLength(1);
+    expect(foundDates[0]).toEqual(DateTime.fromISO(date));
+  });
+
+  it('finds dates at the end of a string', () => {
+    const date = '2023-03-07'
+    const str = `The date is ${date}`;
+
+    const foundDates = FindDate(str);
+    expect(foundDates).toHaveLength(1);
+    expect(foundDates[0]).toEqual(DateTime.fromISO(date));
+  });
+
+  it('finds dates with characters directly after', () => {
+    const date = '2023-03-10'
+    const str = `**Knowledge Hook** - *Interview ${date}*`;
+
+    const foundDates = FindDate(str);
+    expect(foundDates).toHaveLength(1);
+    expect(foundDates[0]).toEqual(DateTime.fromISO(date));
+  });
+
+  it('finds dates with characters immediately before', () => {
+    const date = '2023-03-07'
+    const str = `The date is ohyeah${date}`;
+
+    const foundDates = FindDate(str);
+    expect(foundDates).toHaveLength(1);
+    expect(foundDates[0]).toEqual(DateTime.fromISO(date));
+  });
+
   it('does not error for malformed dates', () => {
     const str = 'This string contains 2023-033-30 as a valid date';
 

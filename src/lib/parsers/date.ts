@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 
 const DATE_FORMATS = [
-  / [0-9]{4}-[0-9]{2}-[0-9]{2}(?!\S)/gi
+  /[0-9]{4}-[0-9]{2}-[0-9]{2}/gi
 ];
 
 export function FindDate(str: string): DateTime[] {

@@ -40,7 +40,7 @@ nav li a, nav li a:visited {
 
 #sidebar {
   padding: 0 1rem 1rem;
-  width: 20%;
+  min-width: 20%;
 }
 
 footer {
