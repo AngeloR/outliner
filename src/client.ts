@@ -165,6 +165,10 @@ async function main() {
 }
 
 function setTime() {
+  if(outline) {
+    outline.pruneDates();
+    outline.renderDates();
+  }
   $('footer').innerHTML = DateTime.now().toLocaleString(DateTime.DATETIME_FULL);
   setTimeout(setTime, 1000 * 60);
 }

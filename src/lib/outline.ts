@@ -54,6 +54,15 @@ export class Outline {
     this.data.contentNodes = _.keyBy(_.map(this.data.contentNodes, n => ContentNode.Create(n)), n => n.id);
   }
 
+  pruneDates() {
+    const now = DateTime.now();
+    Object.keys(this.dates).forEach(key => {
+      if(now > DateTime.fromISO(key)) {
+        delete this.dates[key];
+      }
+    });
+  }
+
   isTreeRoot(id: string) {
     return this.data.id === id;
   }
@@ -345,7 +354,6 @@ export class Outline {
     }).join("\n");
 
     $('#dates').innerHTML = `<ul>${html}</ul>`;
-   console.log(this.dates);
   }
 
   renderNode(node: OutlineTree): string {
