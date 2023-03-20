@@ -29,6 +29,9 @@
       "dialog": {
         "open": true
       },
+      "window": {
+        "setTitle": true
+      },
       "all": false
     },
     "bundle": {

@@ -3,6 +3,7 @@ import { ContentNode, IContentNode } from "./lib/contentNode";
 import { slugify } from './lib/string';
 import * as _ from 'lodash';
 import * as fs from '@tauri-apps/api/fs';
+import { appWindow } from '@tauri-apps/api/window';
 
 type RawOutlineData = {
   id: string;
@@ -66,6 +67,8 @@ export class ApiClient {
       })
     }));
 
+    appWindow.setTitle(`outliner: ${rawOutline.name}`);
+
     return {
       id: rawOutline.id,
       version: rawOutline.version,
@@ -93,6 +96,7 @@ export class ApiClient {
     }), {
       dir: fs.BaseDirectory.AppLocalData,
     });
+
   }
 
   async renameOutline(oldName: string, newName: string) {
@@ -101,6 +105,7 @@ export class ApiClient {
         dir: fs.BaseDirectory.AppLocalData
       });
     }
+    appWindow.setTitle(`outliner: ${newName}`);
   }
 
   async saveContentNode(node: ContentNode) {
