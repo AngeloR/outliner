@@ -9,8 +9,8 @@
 
 :root {
   --modal-bg: #fff;
-  --modal-border-color: #ddd;
-  --app-bg-color: #eee;
+  --modal-border-color: #d5d5d5;
+  --app-bg-color: #e5e5e5;
 
   --font-color: #000;
   --link-color: #098bd9;
@@ -20,7 +20,7 @@
   --cursor-font-color: #fff;
 
   --outliner-bg-color: #fff;
-  --outliner-border-color: #ddd;
+  --outliner-border-color: #d5d5d5;
   --outliner-font-color: #222;
   --outliner-strikethrough-color: #808080;
   --outliner-collapsed-node-color: #222;
@@ -30,25 +30,25 @@
   --search-query-result-selected-bg-color: #000;
   --search-query-result-selected-font-color: #fff;
 
-  --date-header-bg-color: #547883;
-  --date-header-font-color: #000;
-  --date-node-bg-color: #eee;
+  --date-header-bg-color: #757575;
+  --date-header-font-color: #fff;
+  --date-node-bg-color: #e5e5e5;
   --date-node-separator-color: #888;
 
   --table-border-color: #ddd;
   --table-header-bg-color: #666;
   --table-header-font-color: #fff;
-  --table-striped-row-color: #eee;
+  --table-striped-row-color: #e5e5e5;
 
   --kbd-border-color: #aaa;
   --kbd-bg-color: #d2d2d2;
 
-  --btn-bg-color: #eee;
+  --btn-bg-color: #e5e5e5;
   --btn-border-color: #888;
   --btn-hover-color: #f4f4f4;
   --btn-font-color: #098bd9;
 
-  --code-bg-color: #eee;
+  --code-bg-color: #e5e5e5;
   --code-cursor-font-color: #000;
 }
 
