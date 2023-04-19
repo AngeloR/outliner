@@ -6,6 +6,14 @@ export const escapeEditing: KeyEventDefinition = {
   keys: ['esc', 'enter'],
   description: 'Stop editing the current node and return to "navigation" mode',
   action: args => {
+
+    // if you press shift+enter, it means you want a new line within the 
+    // node that you're currently editing, so we don't actually want to
+    // exit from the editing context
+    if(args.e.shiftKey && args.e.key.toLowerCase() === 'enter') {
+      return;
+    }
+
     const {cursor, outline, api, search} = args;
     cursor.get().classList.remove('hidden-cursor');
 
