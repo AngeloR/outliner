@@ -4,7 +4,6 @@ import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
 import { Search } from './modals/search';
 import { ApiClient } from './api';
-import * as _ from 'lodash';
 import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
 import {bindOutlineRenamer} from 'modals/rename-outline';
 import {Modal} from 'lib/modal';
@@ -51,6 +50,7 @@ keyboardJS.withContext('navigation', () => {
     outline = new Outline(raw);
     outliner().innerHTML = outline.render();
     cursor.resetCursor();
+    outline.renderNodeDetails(cursor.getIdOfNode());
     await search.reset();
     await search.indexBatch(outline.data.contentNodes);
 
@@ -93,6 +93,7 @@ function createNewOutline() {
 
   outliner().innerHTML = outline.render();
   cursor.resetCursor();
+    outline.renderNodeDetails(cursor.getIdOfNode());
   document.getElementById('outlineName').innerHTML = outline.data.name;
 
   keyboardJS.setContext('navigation');
@@ -133,6 +134,7 @@ async function main() {
     outline = new Outline(raw);
     outliner().innerHTML = outline.render();
     cursor.resetCursor();
+    outline.renderNodeDetails(cursor.getIdOfNode());
 
     document.getElementById('outlineName').innerHTML = outline.data.name;
 

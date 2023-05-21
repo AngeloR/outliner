@@ -16,6 +16,7 @@ import {lower} from "./lower";
 import {swapUp} from "./swap-up";
 import {swapDown} from "./swap-down";
 import {escapeEditing} from "./escape-editing";
+import { publish } from "./publish";
 
 export const AllShortcuts: KeyEventDefinition[] = [
   sidebarToggle,
@@ -34,5 +35,6 @@ export const AllShortcuts: KeyEventDefinition[] = [
   lower,
   swapUp,
   swapDown,
-  escapeEditing
+  escapeEditing,
+  publish
 ];

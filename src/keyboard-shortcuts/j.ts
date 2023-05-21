@@ -12,6 +12,7 @@ export const j: KeyEventDefinition = {
     if(sibling) {
       if(!args.e.shiftKey) {
         args.cursor.set(`#id-${sibling.getAttribute('data-id')}`);
+        args.outline.renderNodeDetails(args.cursor.getIdOfNode());
       }
     }
 

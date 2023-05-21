@@ -225,6 +225,25 @@ a:visited, .cursor > .nodeContent a:visited {
   border-bottom-width: 0px;
 }
 
+/* NODE DETAILS */
+#node-details {
+  background-color: var(--outliner-bg-color);
+  border: solid 1px var(--outliner-border-color);
+  padding: 0.5rem;
+  position: relative;
+  box-sizing: border-box;
+}
+#node-details .node-id {
+  width: 100%;
+}
+#node-details .last-updated {
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
 /* TEXTSTYLES */
 
 em {

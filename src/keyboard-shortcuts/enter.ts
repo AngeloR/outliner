@@ -25,6 +25,7 @@ export const enter: KeyEventDefinition = {
     cursor.set(`#id-${res.node.id}`);
     api.saveContentNode(res.node);
     api.save(outline);
+    args.outline.renderNodeDetails(args.cursor.getIdOfNode());
 
   }
 }

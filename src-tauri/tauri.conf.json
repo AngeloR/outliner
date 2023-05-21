@@ -12,6 +12,11 @@
   },
   "tauri": {
     "allowlist": {
+      "http": {
+        "scope": [
+          "http://localhost:9090"
+        ]
+      },
       "shell": {
         "open": true
       },
@@ -19,7 +24,8 @@
         "scope": [
           "$APPLOCALDATA/outliner",
           "$APPLOCALDATA/outliner/*",
-          "$APPLOCALDATA/outliner/contentNodes/*"
+          "$APPLOCALDATA/outliner/contentNodes/*",
+          "$HOME/repos/xangelo.ca/content/posts/*"
         ],
         "all": true
       },

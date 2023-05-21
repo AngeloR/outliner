@@ -12,6 +12,6 @@ export const archive: KeyEventDefinition = {
     outline.getContentNode(cursor.getIdOfNode()).toggleArchiveStatus();
     api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
     api.save(outline);
-
+    args.outline.renderNodeDetails(args.cursor.getIdOfNode());
   }
 }

@@ -10,6 +10,7 @@ export const h: KeyEventDefinition = {
     if(parent && parent.classList.contains('node')) {
       if(!e.shiftKey) {
         cursor.set(`#id-${parent.getAttribute('data-id')}`);
+        args.outline.renderNodeDetails(args.cursor.getIdOfNode());
       }
     }
   }

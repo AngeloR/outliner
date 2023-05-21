@@ -1,7 +1,7 @@
 import {OutlineTree, Outline, RawOutline} from "./lib/outline";
 import { ContentNode, IContentNode } from "./lib/contentNode";
 import { slugify } from './lib/string';
-import * as _ from 'lodash';
+import { uniq, keyBy, map } from 'lodash';
 import * as fs from '@tauri-apps/api/fs';
 import { appWindow } from '@tauri-apps/api/window';
 
@@ -55,13 +55,13 @@ export class ApiClient {
 
     const rawOutline = JSON.parse(raw) as OutlineDataStorage;
 
-    const contentNodeIds = _.uniq(JSON.stringify(rawOutline.tree).match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi));
+    const contentNodeIds = uniq(JSON.stringify(rawOutline.tree).match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi));
 
 
     // the first node is always the root
     contentNodeIds.shift();
 
-    const rawContentNodes = await Promise.allSettled(_.map(contentNodeIds, (id) => {
+    const rawContentNodes = await Promise.allSettled(map(contentNodeIds, (id) => {
       return fs.readTextFile(`outliner/contentNodes/${id}.json`, {
         dir: fs.BaseDirectory.AppLocalData
       })
@@ -75,7 +75,7 @@ export class ApiClient {
       created: rawOutline.created,
       name: rawOutline.name,
       tree: rawOutline.tree,
-      contentNodes: _.keyBy(_.map(rawContentNodes, raw => {
+      contentNodes: keyBy(map(rawContentNodes, raw => {
         if(raw.status === 'fulfilled') {
           return ContentNode.Create(JSON.parse(raw.value) as IContentNode)
         }

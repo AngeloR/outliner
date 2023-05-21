@@ -13,6 +13,7 @@ export const l: KeyEventDefinition = {
       const children = cursor.get().querySelector('.node');
       if(children) {
         cursor.set(`#id-${children.getAttribute('data-id')}`);
+        args.outline.renderNodeDetails(args.cursor.getIdOfNode());
       }
     }
   }

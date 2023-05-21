@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { keyBy, map, sortBy, each } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
 import { ContentNode } from './contentNode';
@@ -30,6 +30,11 @@ export interface OutlineTree {
   collapsed: boolean;
 }
 
+export type FlatTreeNode = {
+  id: string;
+  depth: number;
+}
+
 type DateStorage = {
   nodeId: string;
   date: DateTime;
@@ -51,7 +56,7 @@ export class Outline {
       throw new Error(`The version of outliner you have doesn't support opening this doc`);
     }
 
-    this.data.contentNodes = _.keyBy(_.map(this.data.contentNodes, n => ContentNode.Create(n)), n => n.id);
+    this.data.contentNodes = keyBy(map(this.data.contentNodes, n => ContentNode.Create(n)), n => n.id);
   }
 
   pruneDates() {
@@ -72,7 +77,7 @@ export class Outline {
     if(run) {
       return;
     }
-    _.each(root.children, (childNode, idx) => {
+    each(root.children, (childNode, idx) => {
       if(childNode.id === id) {
         action(childNode, root);
         run = true;
@@ -96,8 +101,18 @@ export class Outline {
     });
   }
 
-  flattenOutlineTreeChildren(tree: OutlineTree): string[] {
-    return tree.children.map(node => node.id);
+  flattenOutlineTreeChildren(tree: OutlineTree, depthTracker: number = 0): FlatTreeNode[] {
+    let flat: FlatTreeNode[] = [{id: tree.id, depth: depthTracker}];
+
+    if(tree.children.length > 0) {
+      flat = flat.concat(
+        ...tree.children.map(node => {
+          return this.flattenOutlineTreeChildren(node, depthTracker+1);
+        })
+      );
+    }
+
+    return flat;
   }
 
   liftNodeToParent(nodeId: string) {
@@ -333,8 +348,20 @@ export class Outline {
     return content;
   }
 
+  renderNodeDetails(nodeId: string) {
+    const node = this.getContentNode(nodeId);
+    const date = DateTime.fromMillis(node.lastUpdated || node.created)
+    $('#node-details').innerHTML = `
+    <input type="text" disabled value="${node.id}" class="node-id"><br>
+    <div class="last-updated">
+      ${date.toLocaleString()}
+    </div>
+    <b>Archived: </b> ${node.isArchived() ? DateTime.fromMillis(node.archiveDate).toLocaleString() : 'n/a'}<br>
+    `;
+  }
+
   renderDates() {
-    const sortedDates = _.sortBy(Object.keys(this.dates).map(d => DateTime.fromISO(d)), d => d.toSeconds());
+    const sortedDates = sortBy(Object.keys(this.dates).map(d => DateTime.fromISO(d)), d => d.toSeconds());
 
     let html = sortedDates.map(dateKey => {
       return `<li><div class="date-header">${dateKey.toLocaleString({
@@ -344,7 +371,7 @@ export class Outline {
       })}
       </div>
       <ol class="date-node-display">
-      ${_.map(this.dates[dateKey.toISODate()], d => {
+      ${map(this.dates[dateKey.toISODate()], d => {
         return `<li class="date-node-substr">
         ${marked.parse(this.getContentNode(d.nodeId).content.substr(0, 100))}
         </li>`;
@@ -369,7 +396,7 @@ export class Outline {
     <div class="nodeContent" data-type="${content.type}">
       ${this.renderContent(node.id)}
     </div>
-    ${node.children.length ? _.map(node.children, this.renderNode.bind(this)).join("\n") : ''}
+    ${node.children.length ? map(node.children, this.renderNode.bind(this)).join("\n") : ''}
     </div>`;
 
     this.renderDates();
@@ -383,6 +410,6 @@ export class Outline {
      * node only exists as a container around the rest to ensure a standard format
      * for the tree
      */
-    return _.map(this.data.tree.children, this.renderNode.bind(this)).join("\n");
+    return map(this.data.tree.children, this.renderNode.bind(this)).join("\n");
   }
 }
