@@ -1,5 +1,6 @@
 import type {ApiClient} from "api"
 import type {Cursor} from "cursor"
+import { ConfigReader } from "lib/config-reader"
 import type {Outline} from "lib/outline"
 import type {Search} from "modals/search"
 
@@ -8,7 +9,8 @@ export type KeyEventActionHandlerArgs = {
   outline: Outline,
   cursor: Cursor,
   api: ApiClient,
-  search: Search
+  search: Search,
+  config: ConfigReader
 }
 
 export type KeyEventDefinition = {

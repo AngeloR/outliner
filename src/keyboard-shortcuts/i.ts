@@ -13,7 +13,7 @@ export const i: KeyEventDefinition = {
     const contentNode = cursor.get().querySelector('.nodeContent') as HTMLElement;
 
     // swap the content to the default!
-    contentNode.innerHTML = outline.data.contentNodes[cursor.getIdOfNode()].content;
+    contentNode.textContent = outline.data.contentNodes[cursor.getIdOfNode()].content;
     contentNode.contentEditable = "true";
     contentNode.focus();
     keyboardJS.setContext('editing');

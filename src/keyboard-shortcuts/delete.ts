@@ -34,6 +34,6 @@ export const d: KeyEventDefinition = {
     }
 
     api.save(outline);
-
+    args.outline.renderNodeDetails(args.cursor.getIdOfNode());
   }
 }

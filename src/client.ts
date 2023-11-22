@@ -4,22 +4,24 @@ import keyboardJS from 'keyboardjs';
 import * as rawOutline from './test-data.json';
 import { Search } from './modals/search';
 import { ApiClient } from './api';
-import * as _ from 'lodash';
 import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
 import {bindOutlineRenamer} from 'modals/rename-outline';
 import {Modal} from 'lib/modal';
 import { AllShortcuts } from './keyboard-shortcuts/all';
 import { $ } from './dom';
 import { DateTime } from 'luxon';
+import { appWindow } from '@tauri-apps/api/window';
 
 // help is a special shortcut that can't be included in the rest 
 // even though its the same Type
 import { help } from './keyboard-shortcuts/help';
+import { ConfigReader } from 'lib/config-reader';
 
 let outline: Outline;
 let cursor: Cursor = new Cursor();
 let api: ApiClient = new ApiClient();
 let search: Search = new Search();
+const config: ConfigReader = new ConfigReader();
 
 function outliner() {
   return document.querySelector('#outliner');
@@ -33,11 +35,13 @@ AllShortcuts.concat(help).forEach(def => {
         outline,
         cursor,
         api,
-        search
+        search,
+        config
       });
     });
   });
 });
+
 
 // move down
 keyboardJS.withContext('navigation', () => {
@@ -51,6 +55,7 @@ keyboardJS.withContext('navigation', () => {
     outline = new Outline(raw);
     outliner().innerHTML = outline.render();
     cursor.resetCursor();
+    outline.renderNodeDetails(cursor.getIdOfNode());
     await search.reset();
     await search.indexBatch(outline.data.contentNodes);
 
@@ -93,6 +98,7 @@ function createNewOutline() {
 
   outliner().innerHTML = outline.render();
   cursor.resetCursor();
+    outline.renderNodeDetails(cursor.getIdOfNode());
   document.getElementById('outlineName').innerHTML = outline.data.name;
 
   keyboardJS.setContext('navigation');
@@ -108,6 +114,7 @@ function todaysDate() {
 
 async function main() {
   await api.createDirStructureIfNotExists();
+  await config.loadFile();
   const modal = loadOutlineModal();
 
   modal.on('createOutline', () => {
@@ -133,6 +140,7 @@ async function main() {
     outline = new Outline(raw);
     outliner().innerHTML = outline.render();
     cursor.resetCursor();
+    outline.renderNodeDetails(cursor.getIdOfNode());
 
     document.getElementById('outlineName').innerHTML = outline.data.name;
 
@@ -159,12 +167,50 @@ async function main() {
     });
   });
 
+  // we want to bind to the drop event on the window
+  appWindow.onFileDropEvent(async (event) => {
+    if(event.payload.type === 'drop') {
+
+      if(event.payload.paths.length) {
+        // we only support uploading a single file for now..
+        //@TODO: add some checks to ensure we're only supporting images
+        const file = await api.copyImage(event.payload.paths[0]);
+        console.log('original file path', event.payload.paths[0]);
+        console.log('new file path', file.filePath);
+
+        // insert it one level below current cursor
+        const res = outline.createSiblingNode(cursor.getIdOfNode())
+
+        // just use the filename!
+        res.node.content = `![Newly Uploaded Image](${file.fileName})`;
+
+        const html = outline.renderNode(res.parentNode);
+        if(outline.isTreeRoot(res.parentNode.id)) {
+          cursor.get().parentElement.innerHTML = html;
+        }
+        else {
+          cursor.get().parentElement.outerHTML = html;
+        }
+
+        cursor.set(`#id-${res.node.id}`);
+        api.saveContentNode(res.node);
+        api.save(outline);
+        outline.renderNodeDetails(cursor.getIdOfNode());
+
+      }
+    }
+  });
+
   modal.show();
 
   setTime();
 }
 
 function setTime() {
+  if(outline) {
+    outline.pruneDates();
+    outline.renderDates();
+  }
   $('footer').innerHTML = DateTime.now().toLocaleString(DateTime.DATETIME_FULL);
   setTimeout(setTime, 1000 * 60);
 }

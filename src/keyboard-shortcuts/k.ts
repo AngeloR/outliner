@@ -13,6 +13,7 @@ export const k: KeyEventDefinition = {
     if(sibling && !sibling.classList.contains('nodeContent')) {
       if(!e.shiftKey) {
         cursor.set(`#id-${sibling.getAttribute('data-id')}`);
+        args.outline.renderNodeDetails(args.cursor.getIdOfNode());
       }
     }
   }

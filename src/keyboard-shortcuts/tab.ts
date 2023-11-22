@@ -8,6 +8,10 @@ export const tab: KeyEventDefinition = {
     const { e, cursor, outline, api } = args;
     e.preventDefault();
 
+    if(cursor.isNodeCollapsed()) {
+      return;
+    }
+
     const res = outline.createChildNode(cursor.getIdOfNode());
     const html = outline.renderNode(res.parentNode);
 
@@ -16,6 +20,7 @@ export const tab: KeyEventDefinition = {
     cursor.set(`#id-${res.node.id}`);
     api.saveContentNode(res.node);
     api.save(outline);
+    args.outline.renderNodeDetails(args.cursor.getIdOfNode());
 
   }
 }
