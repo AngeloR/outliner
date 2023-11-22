@@ -8,6 +8,7 @@ export interface IContentNode {
   archiveDate?: number;
   deleted: boolean;
   deletedDate?: number;
+  publishDate?: number;
 }
 
 export class ContentNode implements IContentNode {
@@ -20,6 +21,7 @@ export class ContentNode implements IContentNode {
   archiveDate?: number;
   deleted: boolean;
   deletedDate?: number;
+  publishDate?: number;
 
   constructor(id?: string, content?: string) {
     this.id = id;
@@ -41,6 +43,7 @@ export class ContentNode implements IContentNode {
     node.archiveDate = data.archiveDate;
     node.deleted = data.deleted;
     node.deletedDate = data.deletedDate;
+    node.publishDate = data.publishDate;
 
     return node;
   }
@@ -56,6 +59,18 @@ export class ContentNode implements IContentNode {
 
   isDeleted() {
     return this.deleted === true;
+  }
+
+  isPublished() {
+    return !!this.publishDate;
+  }
+
+  publish() {
+    this.publishDate = Date.now();
+  }
+
+  unpublish() {
+    this.publishDate = null;
   }
 
   toggleArchiveStatus() {
@@ -97,7 +112,8 @@ export class ContentNode implements IContentNode {
       archived: this.archived,
       archiveDate: this.archiveDate,
       deleted: this.deleted,
-      deletedDate: this.deletedDate
+      deletedDate: this.deletedDate,
+      publishDate: this.publishDate
     };
   }
 

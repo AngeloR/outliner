@@ -4,6 +4,7 @@ import { slugify } from './lib/string';
 import { uniq, keyBy, map } from 'lodash';
 import * as fs from '@tauri-apps/api/fs';
 import { appWindow } from '@tauri-apps/api/window';
+import { config, ConfigReader } from "lib/config-reader";
 
 type RawOutlineData = {
   id: string;
@@ -23,19 +24,31 @@ type OutlineDataStorage = {
 export class ApiClient {
   dir = fs.BaseDirectory.AppLocalData;
   state: Map<string, any>;
+  config: ConfigReader;
   constructor() {
     this.state = new Map<string, any>();
+    this.config = config;
   }
 
   async createDirStructureIfNotExists() {
-    if(!await fs.exists('outliner/contentNodes', {
-      dir: fs.BaseDirectory.AppLocalData
-    })) {
-      await fs.createDir('outliner/contentNodes', {
-        dir: fs.BaseDirectory.AppLocalData,
-        recursive: true
-      });
-    }
+    await this.config.loadFile();
+    const pathsToCreate = [
+      `${this.config.config.dirConfig.base}/${this.config.config.dirConfig.contentNodes}`,
+      `${this.config.config.dirConfig.base}/${this.config.config.dirConfig.images}`,
+    ];
+
+    pathsToCreate.forEach(async path => {
+      if(!await fs.exists(path, { dir: fs.BaseDirectory.AppLocalData })) {
+        await fs.createDir(path, {
+          dir: fs.BaseDirectory.AppLocalData,
+          recursive: true
+        });
+        console.log(`Created path [${path}]`);
+      }
+      else {
+        console.log(`Path [${path}] already exists`);
+      }
+    });
   }
 
   async listAllOutlines() {
@@ -84,6 +97,26 @@ export class ApiClient {
         }
       }), n => n.id)
     }
+  }
+
+  async copyImage(source: string): Promise<{fileName: string, filePath: string}> {
+    const filename = slugify(source.split('/').pop());
+    const newFilename = `${Date.now()}-${filename}`;
+    const destination = `${this.config.config.dirConfig.base}/${this.config.config.dirConfig.images}/${newFilename}`;
+
+    if(await fs.exists(destination, { dir: fs.BaseDirectory.AppLocalData })) {
+      throw new Error('File already exists at destination');
+    }
+    else {
+      await fs.copyFile(source, destination, {
+        dir: fs.BaseDirectory.AppLocalData
+      });
+    }
+
+    return {
+      fileName: newFilename,
+      filePath: destination
+    };
   }
 
   async saveOutline(outline: Outline) {

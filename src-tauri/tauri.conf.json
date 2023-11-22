@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "outliner",
-    "version": "0.0.1"
+    "version": "0.0.1-alpha-2"
   },
   "tauri": {
     "allowlist": {
@@ -22,10 +22,12 @@
       },
       "fs": {
         "scope": [
+          "**",
           "$APPLOCALDATA/outliner",
           "$APPLOCALDATA/outliner/*",
           "$APPLOCALDATA/outliner/contentNodes/*",
-          "$HOME/repos/xangelo.ca/content/posts/*"
+          "$APPLOCALDATA/outliner/images/*",
+          "$HOME/**/*"
         ],
         "all": true
       },
@@ -37,6 +39,12 @@
       },
       "window": {
         "setTitle": true
+      },
+      "protocol": {
+        "asset": true,
+        "assetScope": [
+          "$APPLOCALDATA/outliner/images/**"
+        ]
       },
       "all": false
     },
@@ -74,7 +82,7 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
     },
     "updater": {
       "active": false

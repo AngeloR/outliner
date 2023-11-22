@@ -1,6 +1,6 @@
 {
   "name": "outline-browser",
-  "version": "0.0.1-alpha",
+  "version": "0.0.1-alpha-3",
   "scripts": {
     "dev": "npx serve public",
     "webpack-local": "ENVIRONMENT=development npx webpack -w",

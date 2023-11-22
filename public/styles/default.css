@@ -158,6 +158,10 @@ footer {
   color: var(--outliner-expanded-node-color);
   content: '\25B9';
 }
+.node.published::before {
+  content: '\1F4E3';
+  color: var(--outliner-expanded-node-color);
+}
 
 .node.collapsed > .node {
   display: none;
@@ -170,6 +174,10 @@ footer {
 .node.cursor.expanded::before {
   color: var(--cursor-color);
   content: '\25B8';
+}
+.node.cursor.published::before {
+  content: '\1F4E3';
+  color: var(--cursor-font-color);
 }
 .node.cursor.collapsed::before {
   color: var(--cursor-font-color);

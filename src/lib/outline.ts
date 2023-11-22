@@ -7,9 +7,12 @@ import { DateTime } from 'luxon';
 import { FindDate } from './parsers/date';
 import {$} from 'dom';
 
-marked.use({ renderer: { 
-  link: markdownParsers.link 
-}});
+marked.use({
+  renderer: { 
+    link: markdownParsers.link,
+    image: markdownParsers.image
+  }
+});
 
 const SupportedVersions = [
   '0.0.1'
@@ -389,10 +392,11 @@ export class Outline {
     }
     const content: ContentNode = this.data.contentNodes[node.id];
     const collapse = node.collapsed ? 'collapsed': 'expanded';
+    const published = content.isPublished() ? 'published' : '';
 
     const strikethrough = content.isArchived() ? 'strikethrough' : '';
 
-    let html = `<div class="node ${collapse} ${strikethrough}" data-id="${node.id}" id="id-${node.id}">
+    let html = `<div class="node ${collapse} ${strikethrough} ${published}" data-id="${node.id}" id="id-${node.id}">
     <div class="nodeContent" data-type="${content.type}">
       ${this.renderContent(node.id)}
     </div>

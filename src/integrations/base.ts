@@ -1,8 +1,9 @@
 import {Cursor} from "cursor";
+import { ConfigReader } from "lib/config-reader";
 import {Outline} from "lib/outline";
 
 export abstract class Integration {
-  constructor(public id: string, public name: string) {
+  constructor(public id: string, public name: string, public config: ConfigReader) {
 
   }
 
