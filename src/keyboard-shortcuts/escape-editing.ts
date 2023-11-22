@@ -23,7 +23,10 @@ export const escapeEditing: KeyEventDefinition = {
     contentNode.blur();
     keyboardJS.setContext('navigation');
 
-    outline.updateContent(cursor.getIdOfNode(), contentNode.innerHTML.trim());
+    const rawContent = contentNode.innerText.trim();
+    const contentType = rawContent.indexOf('<') === 0 ? 'code' : 'text';
+
+    outline.updateContent(cursor.getIdOfNode(), rawContent, contentType);
     // re-render this node!
     contentNode.innerHTML = outline.renderContent(cursor.getIdOfNode());
     outline.renderDates();

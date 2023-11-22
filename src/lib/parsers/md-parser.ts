@@ -7,6 +7,5 @@ export function link(href: string, title: string, text: string): string {
 
 export function image(href: string, title: string, text: string): string {
   const path = `${config.iamgeDirPath()}/${href}`;
-  console.log('loading image path', path);
   return `<img src="${convertFileSrc(path)}" alt="${text}">`;
 }

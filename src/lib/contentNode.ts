@@ -1,8 +1,10 @@
+export type ContentType = 'text' | 'code';
+
 export interface IContentNode {
   id: string;
   created: number;
   lastUpdated?: number;
-  type: 'text';
+  type: ContentType;
   content: string;
   archived: boolean;
   archiveDate?: number;
@@ -15,7 +17,7 @@ export class ContentNode implements IContentNode {
   id: string;
   created: number;
   lastUpdated?: number;
-  type: 'text';
+  type: ContentType;
   content: string;
   archived: boolean;
   archiveDate?: number;
@@ -36,7 +38,7 @@ export class ContentNode implements IContentNode {
   static Create(data: IContentNode): ContentNode {
     const node = new ContentNode(data.id, data.content);
 
-    node.type = 'text';
+    node.type = data.type;
     node.created = data.created;
     node.lastUpdated = data.lastUpdated;
     node.archived = data.archived;

@@ -1,7 +1,7 @@
 import { keyBy, map, sortBy, each } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { marked } from 'marked';
-import { ContentNode } from './contentNode';
+import { ContentNode, ContentType } from './contentNode';
 import * as markdownParsers from './parsers/md-parser';
 import { DateTime } from 'luxon';
 import { FindDate } from './parsers/date';
@@ -299,12 +299,13 @@ export class Outline {
     }
   }
 
-  updateContent(id: string, content: string) {
+  updateContent(id: string, content: string, type: ContentType = 'text') {
     if(!this.data.contentNodes[id]) {
       throw new Error('Invalid node');
     }
 
     this.data.contentNodes[id].content = content;
+    this.data.contentNodes[id].type = type;
   }
 
   getContentNode(id: string) {
@@ -318,6 +319,7 @@ export class Outline {
   renderContent(nodeId: string): string {
     let node = this.getContentNode(nodeId)
     let content: string;
+    console.log('Rendering node', node.type);
     switch(node.type) {
       case 'text':
         content = marked.parse(node.content);
@@ -343,6 +345,13 @@ export class Outline {
           });
         }
         break;
+      case 'code':
+        console.log('Attempting to render code node');
+        // we use this to properly escsape the code and display it
+        const el = document.createElement('div');
+        el.textContent = node.content;
+        content = el.innerHTML;
+      break;
       default: 
         content = node.content;
         break;
