@@ -22,7 +22,8 @@ nav li {
   display: inline-block;
   padding: 0 1rem;
 }
-nav li a, nav li a:visited {
+nav li a,
+nav li a:visited {
   color: #098bd9;
 }
 
@@ -113,18 +114,19 @@ footer {
   margin: 0 1rem;
   color: #222;
 }
-.node.collapsed::before, .node.expanded::before {
+.node.collapsed::before,
+.node.expanded::before {
   float: left;
   padding-top: 6px;
   padding-right: 5px;
 }
 .node.collapsed::before {
   color: #222;
-  content: '\25B8';
+  content: "\25B8";
 }
 .node.expanded::before {
   color: #aaa;
-  content: '\25B9';
+  content: "\25B9";
 }
 
 .node.collapsed > .node {
@@ -132,12 +134,13 @@ footer {
 }
 
 .nodeContent {
-  padding: 2px 1rem;;
+  padding: 2px 1rem;
   line-height: 1.7rem;
+  min-height: 1.7rem;
 }
 .node.cursor.expanded::before {
   color: #000;
-  content: '\25B8';
+  content: "\25B8";
 }
 .node.cursor.collapsed::before {
   color: #fff;
@@ -152,8 +155,10 @@ footer {
 
 .cursor.hidden-cursor > .nodeContent {
   color: #000;
-  background-color: #fff; }
-.strikethrough, .strikethrough .node {
+  background-color: #fff;
+}
+.strikethrough,
+.strikethrough .node {
   text-decoration: line-through;
   color: #808080;
 }
@@ -170,7 +175,6 @@ a:visited {
 .cursor > .nodeContent a:visited {
   color: #b26be4;
 }
-
 
 /* DATES */
 #dates .date-header:first-child {
@@ -199,7 +203,8 @@ a:visited {
 em {
   font-style: italic;
 }
-strong, b {
+strong,
+b {
   font-weight: bold;
 }
 h1 {
@@ -213,7 +218,8 @@ th {
   background-color: #666;
   color: #fff;
 }
-th, td {
+th,
+td {
   padding: 0.7rem;
 }
 tr:nth-child(even) {

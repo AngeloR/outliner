@@ -48,19 +48,13 @@ export class ApiClient {
   }
 
   async loadOutline(outlineName: string): Promise<RawOutline> {
-    console.log(`outliner/${slugify(outlineName)}.json`);
     const raw = await fs.readTextFile(`outliner/${slugify(outlineName)}.json`, {
       baseDir: fs.BaseDirectory.AppLocalData
     });
 
-    console.log(raw);
-
     const rawOutline = JSON.parse(raw) as OutlineDataStorage;
 
-    console.log(rawOutline);
-
     const contentNodeIds = _.uniq(JSON.stringify(rawOutline.tree).match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi));
-
 
     // the first node is always the root
     contentNodeIds.shift();

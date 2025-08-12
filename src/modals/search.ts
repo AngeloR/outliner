@@ -2,7 +2,7 @@ import { create, insert, insertBatch, search, remove } from '@lyrasearch/lyra';
 import { map } from 'lodash';
 import { ContentNode } from '../lib/contentNode';
 import keyboardJS from 'keyboardjs';
-import {isVisible} from '../dom';
+import { isVisible } from '../dom';
 
 const searchModal = `
 <div class="modal">
@@ -47,10 +47,10 @@ export class Search {
         e.preventDefault();
         document.getElementById('search-query').blur();
         const el = document.querySelector('.search-result.selected');
-        if(el.nextElementSibling) {
+        if (el.nextElementSibling) {
           el.classList.remove('selected');
           el.nextElementSibling.classList.add('selected');
-          if(!isVisible(el.nextElementSibling as HTMLElement)) {
+          if (!isVisible(el.nextElementSibling as HTMLElement)) {
             el.nextElementSibling.scrollIntoView();
           }
         }
@@ -59,10 +59,10 @@ export class Search {
       keyboardJS.bind('up', e => {
         e.preventDefault();
         const el = document.querySelector('.search-result.selected');
-        if(el.previousElementSibling) {
+        if (el.previousElementSibling) {
           el.classList.remove('selected');
           el.previousElementSibling.classList.add('selected');
-          if(!isVisible(el.previousElementSibling as HTMLElement)) {
+          if (!isVisible(el.previousElementSibling as HTMLElement)) {
             el.previousElementSibling.scrollIntoView();
           }
         }
@@ -75,7 +75,7 @@ export class Search {
         document.querySelector('.modal').remove();
         keyboardJS.setContext('navigation');
 
-        if(this.onTermSelection) {
+        if (this.onTermSelection) {
           this.onTermSelection(docId);
         }
       });
@@ -84,7 +84,7 @@ export class Search {
     keyboardJS.withContext('navigation', () => {
       keyboardJS.bind('shift + f', e => {
         e.preventDefault();
-        e.stopPropagation(); 
+        e.stopPropagation();
 
         document.querySelector('body').innerHTML += searchModal;
         const el = document.getElementById('search-query');
@@ -96,14 +96,14 @@ export class Search {
   }
 
   debounceSearch(e: KeyboardEvent) {
-    if(this.debounce) {
+    if (this.debounce) {
       clearInterval(this.debounce);
     }
 
     const el = e.target as HTMLTextAreaElement;
     const query = el.value.toString().trim();
 
-    if(query.length) {
+    if (query.length) {
       this.debounce = setTimeout(() => {
         this.displaySearch(query, e);
       }, 100);
@@ -111,14 +111,14 @@ export class Search {
   }
 
   async displaySearch(terms: string, e: KeyboardEvent) {
-    if(!this.state) {
+    if (!this.state) {
       return;
     }
     const res = await this.search(terms);
 
     const resultContainer = document.getElementById('search-results');
 
-    if(res.hits.length === 0) {
+    if (res.hits.length === 0) {
       resultContainer.innerHTML = '<li><em>No Results</em></li>';
       return;
     }
@@ -128,7 +128,7 @@ export class Search {
       const display = content.substring(0, 100);
 
       return `
-      <li class="search-result ${idx === 0 ? 'selected' : ''}" data-id="${doc.id}">${display}${content.length > display.length ? '...': ''}</li>
+      <li class="search-result ${idx === 0 ? 'selected' : ''}" data-id="${doc.id}">${display}${content.length > display.length ? '...' : ''}</li>
       `;
     });
 

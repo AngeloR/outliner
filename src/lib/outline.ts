@@ -348,7 +348,6 @@ export class Outline {
     }).join("\n");
 
     $('#dates').innerHTML = `<ul>${html}</ul>`;
-    console.log(this.dates);
   }
 
   async renderNode(node: OutlineTree): Promise<string> {
@@ -370,8 +369,6 @@ export class Outline {
     </div>
     ${children.join("\n")}
     </div>`;
-
-    console.log(html);
 
     this.renderDates();
 
