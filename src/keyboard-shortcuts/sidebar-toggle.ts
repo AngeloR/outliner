@@ -7,7 +7,7 @@ export const sidebarToggle: KeyEventDefinition = {
     'ctrl + ;'
   ],
   description: 'Toggle visibility of sidebar',
-  action: (args) => {
+  action: async (args) => {
     $('#sidebar').classList.toggle('hidden');
   }
 }

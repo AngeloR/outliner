@@ -1,8 +1,8 @@
-import {OutlineTree, Outline, RawOutline} from "./lib/outline";
+import { OutlineTree, Outline, RawOutline } from "./lib/outline";
 import { ContentNode, IContentNode } from "./lib/contentNode";
 import { slugify } from './lib/string';
 import * as _ from 'lodash';
-import * as fs from '@tauri-apps/api/fs';
+import * as fs from '@tauri-apps/plugin-fs';
 
 type RawOutlineData = {
   id: string;
@@ -27,32 +27,37 @@ export class ApiClient {
   }
 
   async createDirStructureIfNotExists() {
-    if(!await fs.exists('outliner/contentNodes', {
-      dir: fs.BaseDirectory.AppLocalData
+    if (!await fs.exists('outliner/contentNodes', {
+      baseDir: fs.BaseDirectory.AppLocalData
     })) {
-      await fs.createDir('outliner/contentNodes', {
-        dir: fs.BaseDirectory.AppLocalData,
+      await fs.mkdir('outliner/contentNodes', {
+        baseDir: fs.BaseDirectory.AppLocalData,
         recursive: true
       });
     }
   }
 
   async listAllOutlines() {
-    const files = await fs.readDir('outliner', {
-      dir: fs.BaseDirectory.AppLocalData
+    const files: fs.DirEntry[] = await fs.readDir('outliner', {
+      baseDir: fs.BaseDirectory.AppLocalData
     });
 
     return files.filter(obj => {
-      return !obj.children 
+      return !obj.isDirectory
     });
   }
 
   async loadOutline(outlineName: string): Promise<RawOutline> {
+    console.log(`outliner/${slugify(outlineName)}.json`);
     const raw = await fs.readTextFile(`outliner/${slugify(outlineName)}.json`, {
-      dir: fs.BaseDirectory.AppLocalData
+      baseDir: fs.BaseDirectory.AppLocalData
     });
 
+    console.log(raw);
+
     const rawOutline = JSON.parse(raw) as OutlineDataStorage;
+
+    console.log(rawOutline);
 
     const contentNodeIds = _.uniq(JSON.stringify(rawOutline.tree).match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi));
 
@@ -62,7 +67,7 @@ export class ApiClient {
 
     const rawContentNodes = await Promise.allSettled(_.map(contentNodeIds, (id) => {
       return fs.readTextFile(`outliner/contentNodes/${id}.json`, {
-        dir: fs.BaseDirectory.AppLocalData
+        baseDir: fs.BaseDirectory.AppLocalData
       })
     }));
 
@@ -73,7 +78,7 @@ export class ApiClient {
       name: rawOutline.name,
       tree: rawOutline.tree,
       contentNodes: _.keyBy(_.map(rawContentNodes, raw => {
-        if(raw.status === 'fulfilled') {
+        if (raw.status === 'fulfilled') {
           return ContentNode.Create(JSON.parse(raw.value) as IContentNode)
         }
         else {
@@ -91,26 +96,27 @@ export class ApiClient {
       name: outline.data.name,
       tree: outline.data.tree
     }), {
-      dir: fs.BaseDirectory.AppLocalData,
+      baseDir: fs.BaseDirectory.AppLocalData,
     });
   }
 
   async renameOutline(oldName: string, newName: string) {
-    if(newName.length && oldName !== newName) {
-      return fs.renameFile(`outliner/${slugify(oldName)}.json`, `outliner/${slugify(newName)}.json`, {
-        dir: fs.BaseDirectory.AppLocalData
+    if (newName.length && oldName !== newName) {
+      return fs.rename(`outliner/${slugify(oldName)}.json`, `outliner/${slugify(newName)}.json`, {
+        oldPathBaseDir: fs.BaseDirectory.AppLocalData,
+        newPathBaseDir: fs.BaseDirectory.AppLocalData,
       });
     }
   }
 
   async saveContentNode(node: ContentNode) {
     await fs.writeTextFile(`outliner/contentNodes/${node.id}.json`, JSON.stringify(node.toJson()), {
-      dir: fs.BaseDirectory.AppLocalData
+      baseDir: fs.BaseDirectory.AppLocalData
     });
   }
 
   save(outline: Outline) {
-    if(!this.state.has('saveTimeout')) {
+    if (!this.state.has('saveTimeout')) {
       this.state.set('saveTimeout', setTimeout(async () => {
         await this.saveOutline(outline);
         this.state.delete('saveTimeout');

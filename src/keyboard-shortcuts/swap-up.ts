@@ -4,20 +4,20 @@ export const swapUp: KeyEventDefinition = {
   context: 'navigation',
   keys: ['shift + k'],
   description: 'Swap the current node with the previous sibling node',
-  action: args => {
+  action: async args => {
     const { cursor, outline, api, e } = args;
     // move cursor up
     // if shift key is held, swap the node with its previous sibling
     const sibling = cursor.get().previousElementSibling;
 
-    if(sibling && !sibling.classList.contains('nodeContent')) {
-      if(e.shiftKey) {
+    if (sibling && !sibling.classList.contains('nodeContent')) {
+      if (e.shiftKey) {
         // swap this node with its previous sibling
         const res = outline.swapNodeWithPreviousSibling(cursor.getIdOfNode());
         // re-render the parent node and display that!
-        const html = outline.renderNode(res.parentNode);
+        const html = await outline.renderNode(res.parentNode);
 
-        if(outline.isTreeRoot(res.parentNode.id)) {
+        if (outline.isTreeRoot(res.parentNode.id)) {
           cursor.get().parentElement.innerHTML = html;
         }
         else {

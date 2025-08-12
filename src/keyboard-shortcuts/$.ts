@@ -1,11 +1,11 @@
-import {KeyEventDefinition} from "./base";
+import { KeyEventDefinition } from "./base";
 import keyboardJS from "keyboardjs";
 
 export const $: KeyEventDefinition = {
   context: 'navigation',
   keys: ['shift + 4'],
   description: 'Enter "Edit" mode and place the cursor at the end of the editable content',
-  action: args => {
+  action: async args => {
     const { cursor, outline, e } = args;
     e.preventDefault();
     // switch to editing mode

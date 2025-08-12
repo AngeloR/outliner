@@ -1,4 +1,4 @@
-import * as Dialog from '@tauri-apps/api/dialog';
+import * as Dialog from '@tauri-apps/plugin-dialog';
 import * as path from '@tauri-apps/api/path';
 import { Modal } from '../lib/modal';
 

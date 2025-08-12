@@ -5,9 +5,9 @@ import * as rawOutline from './test-data.json';
 import { Search } from './modals/search';
 import { ApiClient } from './api';
 import * as _ from 'lodash';
-import {loadOutlineModal, openOutlineSelector} from './modals/outline-loader';
-import {bindOutlineRenamer} from 'modals/rename-outline';
-import {Modal} from 'lib/modal';
+import { loadOutlineModal, openOutlineSelector } from './modals/outline-loader';
+import { bindOutlineRenamer } from 'modals/rename-outline';
+import { Modal } from 'lib/modal';
 import { AllShortcuts } from './keyboard-shortcuts/all';
 import { $ } from './dom';
 import { DateTime } from 'luxon';
@@ -43,13 +43,13 @@ AllShortcuts.concat(help).forEach(def => {
 keyboardJS.withContext('navigation', () => {
   keyboardJS.bind('ctrl + o', async e => {
     const res = await openOutlineSelector();
-    if(!res.filename || !res.filename.length) {
+    if (!res.filename || !res.filename.length) {
       return;
     }
     const raw = await api.loadOutline(res.filename.split('.json')[0])
 
     outline = new Outline(raw);
-    outliner().innerHTML = outline.render();
+    outliner().innerHTML = await outline.render();
     cursor.resetCursor();
     await search.reset();
     await search.indexBatch(outline.data.contentNodes);
@@ -63,14 +63,14 @@ keyboardJS.withContext('navigation', () => {
 });
 
 function recursivelyExpand(start: HTMLElement) {
-  if(start.classList.contains('node')) {
-    if(start.classList.contains('collapsed')) {
+  if (start.classList.contains('node')) {
+    if (start.classList.contains('collapsed')) {
       start.classList.remove('collapsed');
       start.classList.add('expanded');
       outline.unfold(start.getAttribute('data-id'));
     }
 
-    if(start.parentElement) {
+    if (start.parentElement) {
       recursivelyExpand(start.parentElement)
     }
   }
@@ -86,12 +86,12 @@ search.onTermSelection = (docId: string) => {
   api.save(outline);
 };
 
-function createNewOutline() {
-  outline = new Outline(rawOutline as unknown as RawOutline); 
+async function createNewOutline() {
+  outline = new Outline(rawOutline as unknown as RawOutline);
   outline.data.name = `Outline - ${todaysDate()}`;
 
 
-  outliner().innerHTML = outline.render();
+  outliner().innerHTML = await outline.render();
   cursor.resetCursor();
   document.getElementById('outlineName').innerHTML = outline.data.name;
 
@@ -103,7 +103,7 @@ function todaysDate() {
 
   const month = now.getMonth() + 1;
 
-  return `${now.getFullYear()}-${month < 9 ? '0':''}${month}-${now.getDate()}-${now.getMinutes()}`;
+  return `${now.getFullYear()}-${month < 9 ? '0' : ''}${month}-${now.getDate()}-${now.getMinutes()}`;
 }
 
 async function main() {
@@ -121,7 +121,7 @@ async function main() {
         document.getElementById('outlineName').innerHTML = outline.data.name;
         modal.remove();
       }
-      catch(e) {
+      catch (e) {
         console.log(e);
       }
     });
@@ -131,7 +131,7 @@ async function main() {
     const raw = await api.loadOutline(filename.split('.json')[0])
 
     outline = new Outline(raw);
-    outliner().innerHTML = outline.render();
+    outliner().innerHTML = await outline.render();
     cursor.resetCursor();
 
     document.getElementById('outlineName').innerHTML = outline.data.name;
@@ -146,7 +146,7 @@ async function main() {
         document.getElementById('outlineName').innerHTML = outline.data.name;
         modal.remove();
       }
-      catch(e) {
+      catch (e) {
         console.log(e);
       }
     });

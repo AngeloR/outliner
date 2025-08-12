@@ -1,16 +1,16 @@
-import {KeyEventDefinition} from "./base";
+import { KeyEventDefinition } from "./base";
 
 export const lower: KeyEventDefinition = {
   context: 'navigation',
   keys: ['shift + l'],
   description: 'Lower the current node to be a child of the previous sibling node',
-  action: args => {
-    const {e, outline, cursor, api} = args;
-    if(e.shiftKey) {
+  action: async args => {
+    const { e, outline, cursor, api } = args;
+    if (e.shiftKey) {
       const res = outline.lowerNodeToChild(cursor.getIdOfNode());
-      const html = outline.renderNode(res.oldParentNode);
+      const html = await outline.renderNode(res.oldParentNode);
 
-      if(outline.isTreeRoot(res.oldParentNode.id)) {
+      if (outline.isTreeRoot(res.oldParentNode.id)) {
         cursor.get().parentElement.innerHTML = html;
       }
       else {
