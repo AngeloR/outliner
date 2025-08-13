@@ -1,4 +1,4 @@
-name: "publish"
+name: "build"
 
 on: pull_request
 
@@ -6,6 +6,7 @@ jobs:
   publish-tauri:
     permissions:
       contents: write
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
@@ -46,12 +47,23 @@ jobs:
         run: yarn install # change this to npm, pnpm or bun depending on which one you use.
 
       - uses: tauri-apps/tauri-action@v0
+        id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: "App v__VERSION__"
+          tagName: release-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: "Outliner v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-tag: auto-build-comment-${{ matrix.platform }}
+          message: |
+            Build for ${{ matrix.platform }} is done.
+            Asset Download Links: 
+            ${{ steps.tauri.outputs.artifactPaths }}
