@@ -24,6 +24,6 @@ export const escapeEditing: KeyEventDefinition = {
     api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
 
     // reset the doc in search
-    search.replace(outline.getContentNode(cursor.getIdOfNode()));
+    // search.replace(outline.getContentNode(cursor.getIdOfNode()));
   }
 }
