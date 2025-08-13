@@ -58,6 +58,34 @@ jobs:
           prerelease: false
           args: ${{ matrix.args }}
 
+      - name: Upload linux assets
+        uses: actions/upload-artifact@v4
+        if: matrix.platform == 'ubuntu-22.04'
+        with:
+          name: pr-${{github.event.pull_request.number }}-${{ matrix.platform }}
+          path: |
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/rpm/*.rpm
+            src-tauri/target/release/bundle/appimage/*.AppImage
+
+      - name: Upload windows assets
+        uses: actions/upload-artifact@v4
+        if: matrix.platform == 'windows-latest'
+        with:
+          name: pr-${{github.event.pull_request.number }}-${{ matrix.platform }}
+          path: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe
+
+      - name: Upload macos assets
+        uses: actions/upload-artifact@v4
+        if: matrix.platform == 'macos-latest'
+        with:
+          name: pr-${{github.event.pull_request.number }}-${{ matrix.platform }}
+          path: |
+            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app
+
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v3
         with:
@@ -65,5 +93,5 @@ jobs:
           comment-tag: auto-build-comment-${{ matrix.platform }}
           message: |
             Build for ${{ matrix.platform }} is done.
-            Asset Download Links: 
+            Uploaded Assets:
             ${{ steps.tauri.outputs.artifactPaths }}
