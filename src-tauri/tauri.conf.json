@@ -40,9 +40,9 @@
       }
     }
   },
-  "productName": "outliner",
+  "productName": "Outliner",
   "mainBinaryName": "outliner",
-  "version": "0.0.1",
+  "version": "../package.json",
   "identifier": "com.outliner.xangelo",
   "plugins": {},
   "app": {
