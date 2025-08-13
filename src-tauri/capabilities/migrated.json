@@ -28,6 +28,7 @@
     "dialog:allow-open",
     "shell:default",
     "fs:default",
-    "dialog:default"
+    "dialog:default",
+    "fs:default"
   ]
 }
