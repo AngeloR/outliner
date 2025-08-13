@@ -1,15 +1,15 @@
-import {KeyEventDefinition} from "./base";
+import { KeyEventDefinition } from "./base";
 
 export const tab: KeyEventDefinition = {
   context: 'navigation',
   keys: ['tab'],
   description: 'Add a new node as the child of the current node',
-  action: args => {
+  action: async args => {
     const { e, cursor, outline, api } = args;
     e.preventDefault();
 
     const res = outline.createChildNode(cursor.getIdOfNode());
-    const html = outline.renderNode(res.parentNode);
+    const html = await outline.renderNode(res.parentNode);
 
     cursor.get().outerHTML = html;
 

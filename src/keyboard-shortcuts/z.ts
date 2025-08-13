@@ -1,17 +1,17 @@
-import {KeyEventDefinition} from "./base";
+import { KeyEventDefinition } from "./base";
 
 export const z: KeyEventDefinition = {
   context: 'navigation',
   keys: ['z'],
   description: 'hide all children node of the current node',
-  action: args => {
+  action: async args => {
     const { cursor, api, outline } = args;
     // toggle collapse
-    if(cursor.isNodeExpanded()) {
+    if (cursor.isNodeExpanded()) {
       cursor.collapse();
       outline.fold(cursor.getIdOfNode());
     }
-    else if(cursor.isNodeCollapsed()) {
+    else if (cursor.isNodeCollapsed()) {
       cursor.expand();
       outline.unfold(cursor.getIdOfNode());
     }

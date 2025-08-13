@@ -23,7 +23,7 @@ export class ContentNode implements IContentNode {
 
   constructor(id?: string, content?: string) {
     this.id = id;
-    this.content = content || '---';
+    this.content = content || '';
     this.created = Date.now();
     this.type = 'text';
 
@@ -59,7 +59,7 @@ export class ContentNode implements IContentNode {
   }
 
   toggleArchiveStatus() {
-    if(this.isArchived()) {
+    if (this.isArchived()) {
       this.unarchive();
     }
     else {
@@ -88,7 +88,7 @@ export class ContentNode implements IContentNode {
   }
 
   toJson(): IContentNode {
-    return  {
+    return {
       id: this.id,
       created: this.created,
       lastUpdated: this.lastUpdated,

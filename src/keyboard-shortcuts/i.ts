@@ -1,12 +1,12 @@
-import {KeyEventDefinition} from "./base";
+import { KeyEventDefinition } from "./base";
 import keyboardJS from "keyboardjs";
 
 export const i: KeyEventDefinition = {
   context: 'navigation',
   keys: ['i'],
   description: 'Enter "edit" mode and place the cursor at the start of the editable content',
-  action: args => {
-    const {e, cursor, outline} = args;
+  action: async args => {
+    const { e, cursor, outline } = args;
     e.preventDefault();
     // switch to editing mode
     cursor.get().classList.add('hidden-cursor');
