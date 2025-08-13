@@ -5,11 +5,13 @@ import { ContentNode } from './contentNode';
 import * as markdownParsers from './parsers/md-parser';
 import { DateTime } from 'luxon';
 import { FindDate } from './parsers/date';
-import {$} from 'dom';
+import { $ } from 'dom';
 
-marked.use({ renderer: { 
-  link: markdownParsers.link 
-}});
+marked.use({
+  renderer: {
+    link: markdownParsers.link
+  }
+});
 
 const SupportedVersions = [
   '0.0.1'
@@ -47,7 +49,7 @@ export class Outline {
     this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
     this.dates = {};
 
-    if(!SupportedVersions.includes(this.data.version)) {
+    if (!SupportedVersions.includes(this.data.version)) {
       throw new Error(`The version of outliner you have doesn't support opening this doc`);
     }
 
@@ -60,16 +62,16 @@ export class Outline {
 
   findNodeInTree(root: OutlineTree, id: string, action: (item: OutlineTree, parent: OutlineTree) => void, runState: boolean = false) {
     let run = runState;
-    if(run) {
+    if (run) {
       return;
     }
     _.each(root.children, (childNode, idx) => {
-      if(childNode.id === id) {
+      if (childNode.id === id) {
         action(childNode, root);
         run = true;
         return false;
       }
-      else if(childNode.children) {
+      else if (childNode.children) {
         this.findNodeInTree(childNode, id, action, run);
       }
     });
@@ -96,21 +98,22 @@ export class Outline {
     let targetNode: OutlineTree, parentNode: OutlineTree;
     this.findNodeInTree(this.data.tree, nodeId, (tNode, pNode) => {
       targetNode = tNode;
-      this.findNodeInTree(this.data.tree, pNode.id, (originalParentNode, newParentNode) => {;
-          if(run) {
-            return;
-          }
-          parentNode = newParentNode;
-          run = true;
+      this.findNodeInTree(this.data.tree, pNode.id, (originalParentNode, newParentNode) => {
+        ;
+        if (run) {
+          return;
+        }
+        parentNode = newParentNode;
+        run = true;
 
-          const flatId = newParentNode.children.map(n => n.id);
+        const flatId = newParentNode.children.map(n => n.id);
 
-          const originalNodePosition = originalParentNode.children.map(n => n.id).indexOf(targetNode.id);
-          const newNodePosition = flatId.indexOf(originalParentNode.id);
+        const originalNodePosition = originalParentNode.children.map(n => n.id).indexOf(targetNode.id);
+        const newNodePosition = flatId.indexOf(originalParentNode.id);
 
-          originalParentNode.children.splice(originalNodePosition, 1);
+        originalParentNode.children.splice(originalNodePosition, 1);
 
-          newParentNode.children.splice(newNodePosition + 1, 0, targetNode);
+        newParentNode.children.splice(newNodePosition + 1, 0, targetNode);
       });
     });
 
@@ -119,22 +122,22 @@ export class Outline {
       parentNode
     }
   }
-  
+
   lowerNodeToChild(nodeId: string) {
     let run = false;
     // find the previous sibling
     // make this node a child of the sibling node
     let targetNode: OutlineTree, newParentNode: OutlineTree, oldParentNode: OutlineTree;
     this.findNodeInTree(this.data.tree, nodeId, (tNode, pNode) => {
-      if(run) {
+      if (run) {
         return;
       }
-      run  = true;
+      run = true;
       targetNode = tNode;
-      
+
       let idList = pNode.children.map(n => n.id);
       // there are no other siblings so we can't do anything
-      if(idList.length === 1) {
+      if (idList.length === 1) {
         return;
       }
 
@@ -157,19 +160,19 @@ export class Outline {
   swapNodeWithNextSibling(nodeId: string) {
     let targetNode: OutlineTree, parentNode: OutlineTree;
     this.findNodeInTree(this.data.tree, nodeId, (tNode, pNode) => {
-        targetNode = tNode;
-        parentNode = pNode;
-        const flatId = parentNode.children.map(n => n.id);
-        const nodePosition = flatId.indexOf(targetNode.id);
+      targetNode = tNode;
+      parentNode = pNode;
+      const flatId = parentNode.children.map(n => n.id);
+      const nodePosition = flatId.indexOf(targetNode.id);
 
-        if(nodePosition === (flatId.length - 1)) {
-          // this is the last node in the list, there's nothing to swap
-          return;
-        }
+      if (nodePosition === (flatId.length - 1)) {
+        // this is the last node in the list, there's nothing to swap
+        return;
+      }
 
-        // remove the node from this point, and push it one later
-        parentNode.children.splice(nodePosition, 1);
-        parentNode.children.splice(nodePosition + 1, 0, targetNode);
+      // remove the node from this point, and push it one later
+      parentNode.children.splice(nodePosition, 1);
+      parentNode.children.splice(nodePosition + 1, 0, targetNode);
     });
 
     return {
@@ -181,19 +184,19 @@ export class Outline {
   swapNodeWithPreviousSibling(nodeId: string) {
     let targetNode: OutlineTree, parentNode: OutlineTree;
     this.findNodeInTree(this.data.tree, nodeId, (tNode, pNode) => {
-        targetNode = tNode;
-        parentNode = pNode;
-        const flatId = parentNode.children.map(n => n.id);
-        const nodePosition = flatId.indexOf(targetNode.id);
+      targetNode = tNode;
+      parentNode = pNode;
+      const flatId = parentNode.children.map(n => n.id);
+      const nodePosition = flatId.indexOf(targetNode.id);
 
-        if(nodePosition === 0) {
-          // this is the first node in the list, there's nothing to swap
-          return;
-        }
+      if (nodePosition === 0) {
+        // this is the first node in the list, there's nothing to swap
+        return;
+      }
 
-        // remove the node from this point, and push it one later
-        parentNode.children.splice(nodePosition, 1);
-        parentNode.children.splice(nodePosition - 1, 0, targetNode);
+      // remove the node from this point, and push it one later
+      parentNode.children.splice(nodePosition, 1);
+      parentNode.children.splice(nodePosition - 1, 0, targetNode);
     });
 
     return {
@@ -228,7 +231,7 @@ export class Outline {
   createChildNode(currentNode: string, nodeId?: string) {
     const node: ContentNode = nodeId ? this.data.contentNodes[nodeId] : new ContentNode(uuid());
 
-    if(!nodeId) {
+    if (!nodeId) {
       this.data.contentNodes[node.id] = node;
     }
 
@@ -254,7 +257,7 @@ export class Outline {
     let run = false;
     let removedNode: OutlineTree, parentNode: OutlineTree;
     this.findNodeInTree(this.data.tree, nodeId, (tNode, pNode) => {
-      if(run) {
+      if (run) {
         return;
       }
       run = true;
@@ -273,7 +276,7 @@ export class Outline {
   }
 
   updateContent(id: string, content: string) {
-    if(!this.data.contentNodes[id]) {
+    if (!this.data.contentNodes[id]) {
       throw new Error('Invalid node');
     }
 
@@ -281,33 +284,33 @@ export class Outline {
   }
 
   getContentNode(id: string) {
-    if(!this.data.contentNodes[id]) {
+    if (!this.data.contentNodes[id]) {
       throw new Error(`Invalid Node ${id}`);
     }
 
     return this.data.contentNodes[id];
   }
 
-  renderContent(nodeId: string): string {
+  async renderContent(nodeId: string): Promise<string> {
     let node = this.getContentNode(nodeId)
     let content: string;
-    switch(node.type) {
+    switch (node.type) {
       case 'text':
-        content = marked.parse(node.content);
+        content = await marked.parse(node.content);
 
         const now = DateTime.now();
         const foundDates = FindDate(node.content);
-        if(foundDates.length) {
+        if (foundDates.length) {
           foundDates.forEach(d => {
             // only deal with dates AFTER today
-            if(now.startOf('day').toMillis() > d.toMillis()) {
+            if (now.startOf('day').toMillis() > d.toMillis()) {
               return;
             }
-            if(!this.dates[d.toISODate()]) {
+            if (!this.dates[d.toISODate()]) {
               this.dates[d.toISODate()] = {};
             }
 
-            if(!this.dates[d.toISODate()][node.id]) {
+            if (!this.dates[d.toISODate()][node.id]) {
               this.dates[d.toISODate()][node.id] = {
                 date: d,
                 nodeId: node.id
@@ -316,7 +319,7 @@ export class Outline {
           });
         }
         break;
-      default: 
+      default:
         content = node.content;
         break;
     }
@@ -345,23 +348,26 @@ export class Outline {
     }).join("\n");
 
     $('#dates').innerHTML = `<ul>${html}</ul>`;
-   console.log(this.dates);
   }
 
-  renderNode(node: OutlineTree): string {
-    if(node.id === this.data.id) {
-      return this.render();
+  async renderNode(node: OutlineTree): Promise<string> {
+    if (node.id === this.data.id) {
+      return await this.render();
     }
     const content: ContentNode = this.data.contentNodes[node.id];
-    const collapse = node.collapsed ? 'collapsed': 'expanded';
+    const collapse = node.collapsed ? 'collapsed' : 'expanded';
 
     const strikethrough = content.isArchived() ? 'strikethrough' : '';
 
+    const children = node.children.length ? await Promise.all(node.children.map(async node => {
+      return this.renderNode(node);
+    })) : [];
+
     let html = `<div class="node ${collapse} ${strikethrough}" data-id="${node.id}" id="id-${node.id}">
     <div class="nodeContent" data-type="${content.type}">
-      ${this.renderContent(node.id)}
+      ${await this.renderContent(node.id)}
     </div>
-    ${node.children.length ? _.map(node.children, this.renderNode.bind(this)).join("\n") : ''}
+    ${children.join("\n")}
     </div>`;
 
     this.renderDates();
@@ -369,12 +375,16 @@ export class Outline {
     return html;
   }
 
-  render() {
+  async render() {
     /*
      * render starts at the root node and only renders its children. The root 
      * node only exists as a container around the rest to ensure a standard format
      * for the tree
      */
-    return _.map(this.data.tree.children, this.renderNode.bind(this)).join("\n");
+    const data = await Promise.all(this.data.tree.children.map(async node => {
+      return this.renderNode(node);
+    }));
+
+    return data.join("\n");
   }
 }

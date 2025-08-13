@@ -1,12 +1,12 @@
-import {KeyEventDefinition} from "./base";
+import { KeyEventDefinition } from "./base";
 
 export const enter: KeyEventDefinition = {
   context: 'navigation',
   keys: ['enter'],
   description: 'Add a new node as the sibling of the current node',
-  action: args => {
-    const { e, outline, cursor, api} = args;
-    if(e.shiftKey) {
+  action: async args => {
+    const { e, outline, cursor, api } = args;
+    if (e.shiftKey) {
       return;
     }
     e.preventDefault();
@@ -14,8 +14,8 @@ export const enter: KeyEventDefinition = {
 
     const res = outline.createSiblingNode(cursor.getIdOfNode());
 
-    const html = outline.renderNode(res.parentNode);
-    if(outline.isTreeRoot(res.parentNode.id)) {
+    const html = await outline.renderNode(res.parentNode);
+    if (outline.isTreeRoot(res.parentNode.id)) {
       cursor.get().parentElement.innerHTML = html;
     }
     else {

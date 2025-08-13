@@ -1,7 +1,7 @@
-import type {ApiClient} from "api"
-import type {Cursor} from "cursor"
-import type {Outline} from "lib/outline"
-import type {Search} from "modals/search"
+import type { ApiClient } from "api"
+import type { Cursor } from "cursor"
+import type { Outline } from "lib/outline"
+import type { Search } from "modals/search"
 
 export type KeyEventActionHandlerArgs = {
   e: keyboardJS.KeyEvent,
@@ -15,5 +15,5 @@ export type KeyEventDefinition = {
   context: 'navigation' | 'search' | 'editing'
   keys: string[],
   description: string,
-  action: (args: KeyEventActionHandlerArgs) => void;
+  action: (args: KeyEventActionHandlerArgs) => Promise<void>;
 }
