@@ -104,9 +104,13 @@ export class ApiClient {
   }
 
   async saveContentNode(node: ContentNode) {
-    await fs.writeTextFile(`outliner/contentNodes/${node.id}.json`, JSON.stringify(node.toJson()), {
-      baseDir: fs.BaseDirectory.AppLocalData
-    });
+    try {
+      await fs.writeTextFile(`outliner/contentNodes/${node.id}.json`, JSON.stringify(node.toJson()), {
+        baseDir: fs.BaseDirectory.AppLocalData
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   save(outline: Outline) {
