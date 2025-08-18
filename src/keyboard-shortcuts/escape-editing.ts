@@ -6,7 +6,12 @@ export const escapeEditing: KeyEventDefinition = {
   keys: ['esc', 'enter'],
   description: 'Stop editing the current node and return to "navigation" mode',
   action: async args => {
-    const { cursor, outline, api, search } = args;
+    const { e, cursor, outline, api, search } = args;
+    // if you press shift+enter, don't do anything
+    if (e.shiftKey && e.key === 'Enter') {
+      return;
+    }
+
     cursor.get().classList.remove('hidden-cursor');
 
     const contentNode = cursor.get().querySelector('.nodeContent') as HTMLElement;
