@@ -1,0 +1,56 @@
+/*
+name: Default Theme
+author: Angelo Rodrigues
+version: 1.0.0
+description: The original light color scheme
+*/
+
+:root {
+  /* Background colors */
+  --color-body-background: #eee;
+  --color-outliner-background: #fff;
+  --color-modal-background: #fff;
+  --color-button-background: #eee;
+  --color-button-hover: #f4f4f4;
+  --color-code-background: #eee;
+  --color-kbd-background: #d2d2d2;
+  --color-table-even-row: #eee;
+  --color-date-node-substr-background: #eee;
+  
+  /* Text colors */
+  --color-primary-text: #222;
+  --color-secondary-text: #aaa;
+  --color-strikethrough: #808080;
+  --color-table-header-text: #fff;
+  
+  /* Link colors */
+  --color-link: #098bd9;
+  --color-link-visited: #b26be4;
+  
+  /* Interactive states */
+  --color-cursor-background: #000;
+  --color-cursor-text: #fff;
+  --color-selected-background: #000;
+  --color-selected-text: #fff;
+  --color-hidden-cursor-background: #fff;
+  --color-hidden-cursor-text: #000;
+  
+  /* Border colors */
+  --color-border: #ddd;
+  --color-border-dark: #888;
+  --color-kbd-border: #aaa;
+  --color-date-node-border: #888;
+  
+  /* Node expansion indicators */
+  --color-node-collapsed: #222;
+  --color-node-expanded: #aaa;
+  --color-cursor-expanded: #000;
+  --color-cursor-collapsed: #fff;
+  
+  /* Specialized elements */
+  --color-date-header-background: #547883;
+  --color-table-header-background: #666;
+  
+  /* Shadow and effects */
+  --color-modal-shadow: rgba(0, 0, 0, 0.7);
+}
