@@ -16,9 +16,11 @@ import {lower} from "./lower";
 import {swapUp} from "./swap-up";
 import {swapDown} from "./swap-down";
 import {escapeEditing} from "./escape-editing";
+import {themeSelector} from "./theme-selector";
 
 export const AllShortcuts: KeyEventDefinition[] = [
   sidebarToggle,
+  themeSelector,
   j,
   k,
   l,

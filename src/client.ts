@@ -11,6 +11,7 @@ import { Modal } from 'lib/modal';
 import { AllShortcuts } from './keyboard-shortcuts/all';
 import { $ } from './dom';
 import { DateTime } from 'luxon';
+import { ThemeManager } from './lib/theme-manager';
 
 // help is a special shortcut that can't be included in the rest 
 // even though its the same Type
@@ -107,6 +108,16 @@ function todaysDate() {
 }
 
 async function main() {
+  // Initialize theme manager and load saved theme preference
+  const themeManager = ThemeManager.getInstance();
+  try {
+    await themeManager.init();
+    console.log('Theme system initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize theme system:', error);
+    // Continue with application startup even if theme system fails
+  }
+
   await api.createDirStructureIfNotExists();
   const modal = loadOutlineModal();
 

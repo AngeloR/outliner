@@ -1,0 +1,57 @@
+/*
+name: Dark Theme
+author: Angelo Rodrigues
+version: 1.0.0
+description: The original dark color scheme
+*/
+
+:root {
+  /* Background colors */
+  --color-body-background: #000;
+  --color-outliner-background: #1A1A19;
+  --color-modal-background: #1A1A19;
+  --color-button-background: #31511E;
+  --color-button-hover: #859F3D;
+
+  --color-code-background: #eee;
+  --color-kbd-background: #859F3D;
+  --color-table-even-row: #1c2616;
+  --color-date-node-substr-background: #eee;
+  
+  /* Text colors */
+  --color-primary-text: #F6FCDF;
+  --color-secondary-text: #F6FCDF;
+  --color-strikethrough: #808080;
+  --color-table-header-text: #F6FCDF;
+  
+  /* Link colors */
+  --color-link: #F6FCDF;
+  --color-link-visited: #b26be4;
+  
+  /* Interactive states */
+  --color-cursor-background: #31511E;
+  --color-cursor-text: #F6FCDF;
+  --color-selected-background: #31511E;
+  --color-selected-text: #F6FCDF;
+  --color-hidden-cursor-background: #F6FCDF;
+  --color-hidden-cursor-text: #31511E;
+  
+  /* Border colors */
+  --color-border: #393E46;
+  --color-border-dark: #393E46;
+  --color-kbd-border: #859F3D;
+  --color-date-node-border: #DFD0B8;
+  
+  /* Node expansion indicators */
+  --color-node-collapsed: #F6FCDF;
+  --color-node-expanded: #F6FCDF;
+  --color-cursor-expanded: #F6FCDF;
+  --color-cursor-collapsed: #F6FCDF;
+  
+  /* Specialized elements */
+  --color-date-header-background: #547883;
+  --color-table-header-background: #31511E;
+  
+  /* Shadow and effects */
+  --color-modal-shadow: rgba(0, 0, 0, 0.7);
+}
