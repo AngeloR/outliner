@@ -8,6 +8,12 @@ export const tab: KeyEventDefinition = {
     const { e, cursor, outline, api } = args;
     e.preventDefault();
 
+    // if the node is collapsed then we don't want to add 
+    // a child node
+    if (cursor.isNodeCollapsed()) {
+      return;
+    }
+
     const res = outline.createChildNode(cursor.getIdOfNode());
     const html = await outline.renderNode(res.parentNode);
 
