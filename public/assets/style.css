@@ -257,6 +257,12 @@ code {
   color: var(--color-hidden-cursor-text);
 }
 
+.task-checkbox {
+  float: left;
+  margin-right: 0.5rem;
+  line-height: 1.7rem;
+}
+
 /* Theme Selector Modal */
 .theme-selector {
   min-height: 200px;

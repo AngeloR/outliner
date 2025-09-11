@@ -298,6 +298,12 @@ export class Outline {
       case 'text':
         content = await marked.parse(node.content);
 
+        // If this node is a task, prefix with a checkbox reflecting completion state
+        if (node.task) {
+          const checked = node.completionDate ? 'checked' : '';
+          content = `<input type="checkbox" class="task-checkbox" ${checked} disabled> ${content}`;
+        }
+
         const now = DateTime.now();
         const foundDates = FindDate(node.content);
         if (foundDates.length) {
@@ -357,7 +363,8 @@ export class Outline {
     const content: ContentNode = this.data.contentNodes[node.id];
     const collapse = node.collapsed ? 'collapsed' : 'expanded';
 
-    const strikethrough = content.isArchived() ? 'strikethrough' : '';
+    const isCompletedTask = !!content.completionDate;
+    const strikethrough = (content.isArchived() || isCompletedTask) ? 'strikethrough' : '';
 
     const children = node.children.length ? await Promise.all(node.children.map(async node => {
       return this.renderNode(node);
