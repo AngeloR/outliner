@@ -42,10 +42,13 @@ type IsoDate = string;
 
 export class Outline {
   data: RawOutline;
+  // tasklist
+  tasklist: Record<NodeID, ContentNode>;
   // we use this format for enforce easy uniqueness
   dates: Record<IsoDate, Record<NodeID, DateStorage>>;
 
   constructor(outlineData: RawOutline) {
+    this.tasklist = {};
     this.data = JSON.parse(JSON.stringify(outlineData)) as RawOutline;
     this.dates = {};
 
@@ -298,6 +301,12 @@ export class Outline {
       case 'text':
         content = await marked.parse(node.content);
 
+        // If this node is a task, prefix with a checkbox reflecting completion state
+        if (node.task) {
+          const checked = node.completionDate ? 'checked' : '';
+          content = `<input type="checkbox" class="task-checkbox" ${checked} disabled> ${content}`;
+        }
+
         const now = DateTime.now();
         const foundDates = FindDate(node.content);
         if (foundDates.length) {
@@ -350,6 +359,31 @@ export class Outline {
     $('#dates').innerHTML = `<ul>${html}</ul>`;
   }
 
+  async renderTasksFromTasklist(): Promise<string> {
+    const entries = Object.values(this.tasklist);
+    if (!entries.length) {
+      return '';
+    }
+
+    const items = await Promise.all(entries.map(async node => {
+      const isCompletedTask = !!node.completionDate;
+      const strikethrough = (node.isArchived() || isCompletedTask) ? 'strikethrough' : '';
+      // Use a unique id for tasks aggregate items to avoid clashing with main outline node ids
+      return `<div class="node expanded ${strikethrough}" data-id="${node.id}" id="tasks-id-${node.id}">
+  <div class="nodeContent" data-type="${node.type}">
+    ${await this.renderContent(node.id)}
+  </div>
+</div>`;
+    }));
+
+    return `<div class="node expanded" data-id="tasks-aggregate" id="id-tasks-aggregate">
+  <div class="nodeContent" data-type="text">
+    <strong>Tasks</strong>
+  </div>
+  ${items.join("\n")}
+</div>`;
+  }
+
   async renderNode(node: OutlineTree): Promise<string> {
     if (node.id === this.data.id) {
       return await this.render();
@@ -357,7 +391,12 @@ export class Outline {
     const content: ContentNode = this.data.contentNodes[node.id];
     const collapse = node.collapsed ? 'collapsed' : 'expanded';
 
-    const strikethrough = content.isArchived() ? 'strikethrough' : '';
+    const isCompletedTask = !!content.completionDate;
+    const strikethrough = (content.isArchived() || isCompletedTask) ? 'strikethrough' : '';
+
+    if (content.task) {
+      this.tasklist[node.id] = content;
+    }
 
     const children = node.children.length ? await Promise.all(node.children.map(async node => {
       return this.renderNode(node);
@@ -381,10 +420,13 @@ export class Outline {
      * node only exists as a container around the rest to ensure a standard format
      * for the tree
      */
+    // reset tasklist before fresh render
+    this.tasklist = {};
     const data = await Promise.all(this.data.tree.children.map(async node => {
       return this.renderNode(node);
     }));
+    const tasks = await this.renderTasksFromTasklist();
 
-    return data.join("\n");
+    return `${tasks}${data.join("\n")}`;
   }
 }

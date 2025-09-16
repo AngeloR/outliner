@@ -8,6 +8,8 @@ export interface IContentNode {
   archiveDate?: number;
   deleted: boolean;
   deletedDate?: number;
+  task?: boolean;
+  completionDate?: number;
 }
 
 export class ContentNode implements IContentNode {
@@ -20,6 +22,8 @@ export class ContentNode implements IContentNode {
   archiveDate?: number;
   deleted: boolean;
   deletedDate?: number;
+  task?: boolean;
+  completionDate?: number;
 
   constructor(id?: string, content?: string) {
     this.id = id;
@@ -29,6 +33,9 @@ export class ContentNode implements IContentNode {
 
     this.archived = false;
     this.deleted = false;
+
+    this.task = false;
+    this.completionDate = null;
   }
 
   static Create(data: IContentNode): ContentNode {
@@ -41,6 +48,10 @@ export class ContentNode implements IContentNode {
     node.archiveDate = data.archiveDate;
     node.deleted = data.deleted;
     node.deletedDate = data.deletedDate;
+
+    // Backwards compatibility with saved data that may not have these fields
+    node.task = (data as any).task ?? false;
+    node.completionDate = (data as any).completionDate ?? null;
 
     return node;
   }
@@ -87,6 +98,26 @@ export class ContentNode implements IContentNode {
     this.deletedDate = Date.now();
   }
 
+  // Task helpers
+  toggleTask() {
+    if (this.task) {
+      this.task = false;
+      this.completionDate = null;
+    }
+    else {
+      this.task = true;
+    }
+  }
+
+  markComplete() {
+    this.task = true;
+    this.completionDate = Date.now();
+  }
+
+  markIncomplete() {
+    this.completionDate = null;
+  }
+
   toJson(): IContentNode {
     return {
       id: this.id,
@@ -97,7 +128,9 @@ export class ContentNode implements IContentNode {
       archived: this.archived,
       archiveDate: this.archiveDate,
       deleted: this.deleted,
-      deletedDate: this.deletedDate
+      deletedDate: this.deletedDate,
+      task: this.task,
+      completionDate: this.completionDate
     };
   }
 

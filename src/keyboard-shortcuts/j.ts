@@ -7,11 +7,15 @@ export const j: KeyEventDefinition = {
   action: async args => {
     // move cursor down
     // if shift key is held, swap the node with its next sibling
-    const sibling = args.cursor.get().nextElementSibling;
+    const el = args.cursor.get();
+    const sibling = el.nextElementSibling as HTMLElement | null;
 
     if (sibling) {
       if (!args.e.shiftKey) {
-        args.cursor.set(`#id-${sibling.getAttribute('data-id')}`);
+        const isTasksContainer = el.id === 'id-tasks-aggregate';
+        const inTasksAggregate = !!el.closest('#id-tasks-aggregate') && !isTasksContainer;
+        const prefix = inTasksAggregate ? '#tasks-id-' : '#id-';
+        args.cursor.set(`${prefix}${sibling.getAttribute('data-id')}`);
       }
     }
 
