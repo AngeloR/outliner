@@ -8,11 +8,15 @@ export const k: KeyEventDefinition = {
     const { cursor, e } = args;
     // move cursor up
     // if shift key is held, swap the node with its previous sibling
-    const sibling = cursor.get().previousElementSibling;
+    const el = cursor.get();
+    const sibling = el.previousElementSibling as HTMLElement | null;
 
     if (sibling && !sibling.classList.contains('nodeContent')) {
       if (!e.shiftKey) {
-        cursor.set(`#id-${sibling.getAttribute('data-id')}`);
+        const isTasksContainer = el.id === 'id-tasks-aggregate';
+        const inTasksAggregate = !!el.closest('#id-tasks-aggregate') && !isTasksContainer;
+        const prefix = inTasksAggregate ? '#tasks-id-' : '#id-';
+        cursor.set(`${prefix}${sibling.getAttribute('data-id')}`);
       }
     }
   }

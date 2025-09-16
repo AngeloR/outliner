@@ -260,7 +260,7 @@ code {
 .task-checkbox {
   float: left;
   margin-right: 0.5rem;
-  line-height: 1.7rem;
+  margin-top: 0.4rem;
 }
 
 /* Theme Selector Modal */
