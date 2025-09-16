@@ -10,9 +10,13 @@ export const l: KeyEventDefinition = {
       if (cursor.isNodeCollapsed()) {
         return;
       }
-      const children = cursor.get().querySelector('.node');
+      const el = cursor.get();
+      const children = el.querySelector('.node') as HTMLElement | null;
       if (children) {
-        cursor.set(`#id-${children.getAttribute('data-id')}`);
+        const isTasksContainer = el.id === 'id-tasks-aggregate';
+        const inTasksAggregate = !!el.closest('#id-tasks-aggregate') && !isTasksContainer;
+        const prefix = inTasksAggregate || isTasksContainer ? '#tasks-id-' : '#id-';
+        cursor.set(`${prefix}${children.getAttribute('data-id')}`);
       }
     }
   }
