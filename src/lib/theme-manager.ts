@@ -19,10 +19,11 @@ export class ThemeManager {
     private readonly THEMES_DIR = 'assets/themes';
     public readonly THEMES = [
         'default.css',
-        'dark.css'
+        'dark.css',
+        'synthwave-84.css'
     ]
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): ThemeManager {
         if (!ThemeManager.instance) {
@@ -51,10 +52,10 @@ export class ThemeManager {
 
     public async loadTheme(themeName: string): Promise<void> {
         try {
-            const themeInfo = this.availableThemes.find(t => 
+            const themeInfo = this.availableThemes.find(t =>
                 t.filename.replace('.css', '') === themeName
             );
-            
+
             if (!themeInfo) {
                 console.warn(`Theme "${themeName}" not found, falling back to default`);
                 await this.loadThemeCSS('default.css');
@@ -95,25 +96,25 @@ export class ThemeManager {
         return new Promise((resolve, reject) => {
             // Remove any existing theme link first
             this.removeCurrentTheme();
-            
+
             const link = document.createElement('link');
             link.rel = 'stylesheet';
             link.type = 'text/css';
             link.href = `${this.THEMES_PATH}${filename}`;
             link.id = 'theme-stylesheet';
-            
+
             link.onload = () => {
                 this.currentThemeLink = link;
                 console.log(`Theme CSS loaded successfully: ${filename}`);
                 resolve();
             };
-            
+
             link.onerror = (error) => {
                 console.error(`Failed to load theme CSS: ${filename}`, error);
                 document.head.removeChild(link);
                 reject(new Error(`Failed to load theme CSS: ${filename}`));
             };
-            
+
             document.head.appendChild(link);
         });
     }
@@ -128,20 +129,20 @@ export class ThemeManager {
     private parseThemeMetadata(cssContent: string): ThemeInfo {
         const metadataRegex = /\/\*\s*([\s\S]*?)\s*\*\//;
         const match = cssContent.match(metadataRegex);
-        
+
         const metadata: Partial<ThemeInfo> = {
             filename: ''
         };
-        
+
         if (match && match[1]) {
             const lines = match[1].split('\n');
-            
+
             for (const line of lines) {
                 const [key, ...valueParts] = line.split(':');
                 if (key && valueParts.length > 0) {
                     const trimmedKey = key.trim().toLowerCase();
                     const value = valueParts.join(':').trim();
-                    
+
                     switch (trimmedKey) {
                         case 'name':
                             metadata.name = value;
@@ -159,7 +160,7 @@ export class ThemeManager {
                 }
             }
         }
-        
+
         if (!metadata.name) {
             const filename = metadata.filename || 'unknown';
             metadata.name = filename.replace('.css', '').replace(/-/g, ' ')
@@ -167,24 +168,24 @@ export class ThemeManager {
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
         }
-        
+
         return metadata as ThemeInfo;
     }
 
     private async discoverAvailableThemes(): Promise<ThemeInfo[]> {
         try {
             let themeFiles: string[] = [];
-            
+
             // Try to use Tauri's file system API first
             try {
                 const themesPath = await resolveResource(this.THEMES_DIR);
                 const entries = await fs.readDir(themesPath);
-                
+
                 // Filter for CSS files
                 themeFiles = entries
                     .filter(entry => !entry.isDirectory && entry.name?.endsWith('.css'))
                     .map(entry => entry.name as string);
-                
+
                 console.log('Discovered theme files via Tauri:', themeFiles);
             } catch (tauriError) {
                 // Fallback to fetching known themes if Tauri file system isn't available
@@ -192,13 +193,13 @@ export class ThemeManager {
                 console.log('Tauri file system not available, using fallback method');
                 themeFiles = await this.discoverThemesViaFetch();
             }
-            
+
             const themes: ThemeInfo[] = [];
-            
+
             for (const filename of themeFiles) {
                 try {
                     let cssContent: string;
-                    
+
                     // Try to read via Tauri first
                     try {
                         const cssPath = await resolveResource(`${this.THEMES_DIR}/${filename}`);
@@ -211,10 +212,10 @@ export class ThemeManager {
                         }
                         cssContent = await response.text();
                     }
-                    
+
                     const themeInfo = this.parseThemeMetadata(cssContent);
                     themeInfo.filename = filename;
-                    
+
                     themes.push(themeInfo);
                 } catch (error) {
                     console.warn(`Failed to parse theme ${filename}:`, error);
@@ -227,7 +228,7 @@ export class ThemeManager {
                     });
                 }
             }
-            
+
             if (themes.length === 0) {
                 themes.push({
                     name: 'Default Theme',
@@ -235,7 +236,7 @@ export class ThemeManager {
                     description: 'The original color scheme'
                 });
             }
-            
+
             this.availableThemes = themes;
             return themes;
         } catch (error) {
@@ -251,7 +252,7 @@ export class ThemeManager {
 
     private async discoverThemesViaFetch(): Promise<string[]> {
         const availableThemes: string[] = [];
-        
+
         for (const theme of this.THEMES) {
             try {
                 const response = await fetch(`${this.THEMES_PATH}${theme}`, { method: 'HEAD' });
@@ -262,7 +263,7 @@ export class ThemeManager {
                 // Theme doesn't exist, skip it
             }
         }
-        
+
         return availableThemes.length > 0 ? availableThemes : ['default.css'];
     }
 

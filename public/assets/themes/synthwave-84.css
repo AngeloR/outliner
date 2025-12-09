@@ -1,0 +1,59 @@
+/*
+name: Synthwave '84
+author: Angelo Rodrigues
+version: 1.0.0
+description: Neon purple synthwave-inspired color scheme
+*/
+
+:root {
+  /* Background colors */
+  --color-body-background: #1b1325;
+  --color-outliner-background: #2a1e36;
+  --color-modal-background: #2a1e36;
+  --color-button-background: #6a00f4;
+  --color-button-hover: #b967ff;
+
+  --color-code-background: #3a2a4f;
+  --color-kbd-background: #2de2e6;
+  --color-table-even-row: #2f2440;
+  --color-date-node-substr-background: #3a2a4f;
+  
+  /* Text colors */
+  --color-primary-text: #e5d7ff;
+  --color-secondary-text: #cbb6ff;
+  --color-strikethrough: #a38bb6;
+  --color-table-header-text: #e5d7ff;
+  
+  /* Link colors */
+  --color-link: #ff7edb;
+  --color-link-visited: #b967ff;
+  
+  /* Interactive states */
+  --color-cursor-background: #b967ff;
+  --color-cursor-text: #1b1325;
+  --color-selected-background: #6a00f4;
+  --color-selected-text: #e5d7ff;
+  --color-hidden-cursor-background: #2de2e6;
+  --color-hidden-cursor-text: #1b1325;
+  
+  /* Border colors */
+  --color-border: #4a3b63;
+  --color-border-dark: #6a00f4;
+  --color-kbd-border: #2de2e6;
+  --color-date-node-border: #b967ff;
+  
+  /* Node expansion indicators */
+  --color-node-collapsed: #ff7edb;
+  --color-node-expanded: #ff7edb;
+  --color-cursor-expanded: #ff7edb;
+  --color-cursor-collapsed: #ff7edb;
+  
+  /* Specialized elements */
+  --color-date-header-background: #6a00f4;
+  --color-table-header-background: #6a00f4;
+  
+  /* Shadow and effects */
+  --color-modal-shadow: rgba(0, 0, 0, 0.7);
+}
+
+
