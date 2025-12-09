@@ -19,6 +19,8 @@ import { escapeEditing } from "./escape-editing";
 import { themeSelector } from "./theme-selector";
 import { t } from './t';
 import { pastePlainEditing } from "./paste-plain";
+import { zoomIn } from "./zoom-in";
+import { zoomOut } from "./zoom-out";
 
 export const AllShortcuts: KeyEventDefinition[] = [
   sidebarToggle,
@@ -41,4 +43,6 @@ export const AllShortcuts: KeyEventDefinition[] = [
   swapDown,
   escapeEditing,
   pastePlainEditing,
+  zoomIn,
+  zoomOut,
 ];
