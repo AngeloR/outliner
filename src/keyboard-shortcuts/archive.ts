@@ -2,7 +2,7 @@ import { KeyEventDefinition } from "./base";
 
 export const archive: KeyEventDefinition = {
   context: 'navigation',
-  keys: ['shift + x', 'ctrl + x'],
+  keys: ['x'],
   description: 'Mark a node as archived; ctrl+x also completes task',
   action: async args => {
     const { e, outline, cursor, api } = args;
@@ -13,7 +13,7 @@ export const archive: KeyEventDefinition = {
     node.toggleArchiveStatus();
 
     if (node.task) {
-      if (e.ctrlKey || node.archived) {
+      if (node.archived) {
         node.markComplete();
       }
       else {

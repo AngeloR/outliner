@@ -263,6 +263,20 @@ code {
   margin-top: 0.4rem;
 }
 
+/* Completion badge */
+.completion-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--color-secondary-text);
+  background-color: var(--color-button-background);
+  text-decoration: none; /* override strikethrough */
+}
+
 /* Theme Selector Modal */
 .theme-selector {
   min-height: 200px;

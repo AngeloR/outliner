@@ -307,6 +307,14 @@ export class Outline {
           content = `<input type="checkbox" class="task-checkbox" ${checked} disabled> ${content}`;
         }
 
+        // If completed, append a small completion badge with the date
+        if (node.completionDate) {
+          const completedAt = DateTime.fromMillis(node.completionDate);
+          const dateText = completedAt.toLocaleString(DateTime.DATE_MED);
+          const titleText = completedAt.toLocaleString(DateTime.DATETIME_FULL);
+          content = `${content} <span class="completion-badge" title="${titleText}">Completed ${dateText}</span>`;
+        }
+
         const now = DateTime.now();
         const foundDates = FindDate(node.content);
         if (foundDates.length) {
