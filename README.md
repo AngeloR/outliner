@@ -76,8 +76,6 @@ Press the in‑app help (`?`) to see available shortcuts, or explore the `src/ke
 
 ### Screenshots
 
-Add a few screenshots here (default, dark, synthwave‑84). Example filenames you can drop into `docs/screenshots/`:
-
 ![Default theme](docs/screenshots/light-theme.png)
 ![Dark theme](docs/screenshots/dark-theme.png)
 ![Synthwave‑84 theme](docs/screenshots/synthwave-84-theme.png)
