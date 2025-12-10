@@ -22,11 +22,13 @@ import { pastePlainEditing } from "./paste-plain";
 import { zoomIn } from "./zoom-in";
 import { zoomOut } from "./zoom-out";
 import { gg } from "./g";
+import { shiftG } from "./shift-g";
 
 export const AllShortcuts: KeyEventDefinition[] = [
   sidebarToggle,
   themeSelector,
   gg,
+  shiftG,
   j,
   k,
   l,
