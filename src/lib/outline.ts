@@ -9,7 +9,8 @@ import { $ } from 'dom';
 
 marked.use({
   renderer: {
-    link: markdownParsers.link
+    link: markdownParsers.link,
+    codespan: markdownParsers.codespan as any
   }
 });
 
