@@ -1,6 +1,23 @@
 {
-  "name": "outline-browser",
-  "version": "0.0.4",
+  "name": "outliner",
+  "description": "A cross platform desktop outliner that is built using tauri",
+  "version": "0.0.5",
+  "author": "Angelo R <me@xangelo.ca>",
+  "license": "MIT",
+  "homepage": "https://github.com/AngeloR/outliner",
+  "bugs": {
+    "url": "https://github.com/AngeloR/outliner/issues"
+  },
+  "keywords": [
+    "outliner",
+    "desktop",
+    "cross-platform",
+    "tauri"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AngeloR/outliner"
+  },
   "scripts": {
     "dev": "npx serve public",
     "webpack-local": "ENVIRONMENT=development npx webpack -w",
