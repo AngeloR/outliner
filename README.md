@@ -74,6 +74,40 @@ Helpful links:
 
 Press the in‑app help (`?`) to see available shortcuts, or explore the `src/keyboard-shortcuts/` directory. Common actions include creating bullets, indent/outdent, lift/lower, and zoom.
 
+### Keyboard shortcuts
+
+Quick cheatsheet of key combinations and what they do. Keys are shown literally (Meta = Cmd on macOS).
+
+| Key                                      | Action                                                                      | Context    |
+| ---------------------------------------- | --------------------------------------------------------------------------- | ---------- |
+| `ctrl + ;`                               | Toggle visibility of sidebar                                                | navigation |
+| `ctrl + t`                               | Open theme selector                                                         | navigation |
+| `shift + /`                              | Display help modal                                                          | navigation |
+| `ctrl + o`                               | Open outline selector                                                       | navigation |
+| `ctrl + n`                               | Create new outline                                                          | navigation |
+| `g`                                      | Scroll to the very top of the document                                      | navigation |
+| `shift + g`                              | Scroll to the very bottom of the document                                   | navigation |
+| `j`                                      | Move the cursor to the next sibling of the current node                     | navigation |
+| `k`                                      | Move the cursor to the previous sibling of the current node                 | navigation |
+| `l`                                      | Move the cursor to the first child element of the current node              | navigation |
+| `h`                                      | Move the cursor to the parent element of the current node                   | navigation |
+| `z`                                      | hide all children node of the current node                                  | navigation |
+| `t`                                      | Toggle current node as a task                                               | navigation |
+| `shift + 4`                              | Enter "Edit" mode and place the cursor at the end of the editable content   | navigation |
+| `i`                                      | Enter "edit" mode and place the cursor at the start of the editable content | navigation |
+| `tab`                                    | Add a new node as the child of the current node                             | navigation |
+| `enter`                                  | Add a new node as the sibling of the current node                           | navigation |
+| `shift + d`                              | Delete the current node                                                     | navigation |
+| `shift + h`                              | Lift the current node to be a sibling of the parent node                    | navigation |
+| `shift + l`                              | Lower the current node to be a child of the previous sibling node           | navigation |
+| `shift + k`                              | Swap the current node with the previous sibling node                        | navigation |
+| `shift + j`                              | Swap the current node with the next sibling node                            | navigation |
+| `shift + .`                              | Zoom into current node (virtual view)                                       | navigation |
+| `shift + ,`                              | Exit zoom and return to full outline                                        | navigation |
+| `esc`                                    | Stop editing the current node and return to "navigation" mode               | editing    |
+| `enter`                                  | Stop editing the current node and return to "navigation" mode               | editing    |
+| `meta + shift + v` or `ctrl + shift + v` | Paste clipboard as plain text (no formatting)                               | editing    |
+
 ### Screenshots
 
 ![Default theme](docs/screenshots/light-theme.png)
