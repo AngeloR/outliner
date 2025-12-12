@@ -1,7 +1,7 @@
 {
   "name": "outliner",
   "description": "A cross platform desktop outliner that is built using tauri",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Angelo R <me@xangelo.ca>",
   "license": "MIT",
   "homepage": "https://github.com/AngeloR/outliner",
