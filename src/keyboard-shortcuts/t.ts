@@ -65,7 +65,6 @@ export const t: KeyEventDefinition = {
         const inTasksAggregate = !!cursor.get()?.closest('#id-tasks-aggregate');
         cursor.set(inTasksAggregate ? `#tasks-id-${nodeId}` : `#id-${nodeId}`);
 
-        api.saveContentNode(node);
         api.save(outline);
     }
 }

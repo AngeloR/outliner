@@ -23,7 +23,6 @@ export const enter: KeyEventDefinition = {
     }
 
     cursor.set(`#id-${res.node.id}`);
-    api.saveContentNode(res.node);
     api.save(outline);
 
   }

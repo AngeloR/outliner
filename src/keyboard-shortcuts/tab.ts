@@ -20,7 +20,6 @@ export const tab: KeyEventDefinition = {
     cursor.get().outerHTML = html;
 
     cursor.set(`#id-${res.node.id}`);
-    api.saveContentNode(res.node);
     api.save(outline);
 
   }
