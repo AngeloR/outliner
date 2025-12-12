@@ -47,7 +47,7 @@ keyboardJS.withContext('navigation', () => {
     if (!res.filename || !res.filename.length) {
       return;
     }
-    const raw = await api.loadOutline(res.filename.split('.json')[0])
+    const raw = await api.loadOutline(res.filename);
 
     outline = new Outline(raw);
     outliner().innerHTML = await outline.render();
@@ -139,7 +139,7 @@ async function main() {
   });
 
   modal.on('loadOutline', async filename => {
-    const raw = await api.loadOutline(filename.split('.json')[0])
+    const raw = await api.loadOutline(filename)
 
     outline = new Outline(raw);
     outliner().innerHTML = await outline.render();
