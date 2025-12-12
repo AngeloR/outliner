@@ -21,8 +21,8 @@ export async function openOutlineSelector() {
     directory: false,
     title: 'Select Outline',
     filters: [{
-      name: 'JSON',
-      extensions: ['json']
+      name: 'OPML',
+      extensions: ['opml']
     }]
   });
 

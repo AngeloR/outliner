@@ -25,8 +25,8 @@ export const escapeEditing: KeyEventDefinition = {
     contentNode.innerHTML = await outline.renderContent(cursor.getIdOfNode());
     outline.renderDates();
 
-    // push the new node content remotely!
-    api.saveContentNode(outline.getContentNode(cursor.getIdOfNode()));
+    // persist changes (single-file OPML)
+    api.save(outline);
 
     // reset the doc in search
     // search.replace(outline.getContentNode(cursor.getIdOfNode()));
