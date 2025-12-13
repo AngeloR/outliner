@@ -26,6 +26,46 @@ function outliner() {
   return document.querySelector('#outliner');
 }
 
+function bindCopyCurrentNodeText() {
+  document.addEventListener('copy', async (e: ClipboardEvent) => {
+    // If the user has selected any text, preserve default copy behavior.
+    const selection = window.getSelection();
+    const selectedText = selection?.toString() ?? '';
+    if (selectedText.trim().length > 0) {
+      return;
+    }
+
+    // If there is no active outline yet, do nothing.
+    if (!outline) {
+      return;
+    }
+
+    const cursorEl = cursor.get() as HTMLElement | null;
+    if (!cursorEl) {
+      return;
+    }
+
+    const contentEl = cursorEl.querySelector('.nodeContent') as HTMLElement | null;
+    const text = (contentEl?.innerText ?? '').trim();
+    if (!text.length) {
+      return;
+    }
+
+    // Prefer the copy event clipboardData (works for Cmd/Ctrl+C), fallback to Clipboard API.
+    e.preventDefault();
+    if (e.clipboardData) {
+      e.clipboardData.setData('text/plain', text);
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      // If Clipboard API is unavailable/blocked, do nothing silently.
+    }
+  });
+}
+
 AllShortcuts.concat(help).forEach(def => {
   keyboardJS.withContext(def.context, () => {
     keyboardJS.bind(def.keys, async e => {
@@ -117,6 +157,8 @@ async function main() {
     console.error('Failed to initialize theme system:', error);
     // Continue with application startup even if theme system fails
   }
+
+  bindCopyCurrentNodeText();
 
   await api.createDirStructureIfNotExists();
   const modal = loadOutlineModal();
