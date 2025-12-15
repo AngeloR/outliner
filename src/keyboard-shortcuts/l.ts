@@ -2,7 +2,7 @@ import { KeyEventDefinition } from "./base";
 
 export const l: KeyEventDefinition = {
   context: 'navigation',
-  keys: ['l'],
+  keys: ['l', 'right'],
   description: 'Move the cursor to the first child element of the current node',
   action: async args => {
     const { e, cursor } = args;

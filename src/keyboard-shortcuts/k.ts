@@ -2,7 +2,7 @@ import { KeyEventDefinition } from "./base";
 
 export const k: KeyEventDefinition = {
   context: 'navigation',
-  keys: ['k'],
+  keys: ['k', 'up'],
   description: 'Move the cursor to the previous sibling of the current node',
   action: async args => {
     const { cursor, e } = args;

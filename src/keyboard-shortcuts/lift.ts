@@ -2,7 +2,7 @@ import { KeyEventDefinition } from "./base";
 
 export const lift: KeyEventDefinition = {
   context: 'navigation',
-  keys: ['shift + h'],
+  keys: ['shift + h', 'shift + left'],
   description: 'Lift the current node to be a sibling of the parent node',
   action: async args => {
     const { e, cursor, outline, api } = args;
