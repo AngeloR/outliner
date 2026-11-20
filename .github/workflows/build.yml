@@ -23,10 +23,10 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: package.json # uses the volta.node pin
           cache: npm
@@ -58,7 +58,7 @@ jobs:
           args: ${{ matrix.args }}
 
       - name: Upload linux assets
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: matrix.platform == 'ubuntu-22.04'
         with:
           name: pr-${{github.event.pull_request.number }}-${{ matrix.platform }}
@@ -68,7 +68,7 @@ jobs:
             src-tauri/target/release/bundle/appimage/*.AppImage
 
       - name: Upload windows assets
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: matrix.platform == 'windows-latest'
         with:
           name: pr-${{github.event.pull_request.number }}-${{ matrix.platform }}
@@ -77,7 +77,7 @@ jobs:
             src-tauri/target/release/bundle/nsis/*.exe
 
       - name: Upload macos assets
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: matrix.platform == 'macos-latest'
         with:
           name: pr-${{github.event.pull_request.number }}-${{ matrix.target }}
@@ -86,10 +86,9 @@ jobs:
             src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app
 
       - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v3
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-tag: auto-build-comment-${{ matrix.platform }}-${{ matrix.target }}
+          header: auto-build-comment-${{ matrix.platform }}-${{ matrix.target }}
           message: |
             Build for ${{ matrix.platform }} ${{ matrix.target }} is done.
             Uploaded Assets:
