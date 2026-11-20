@@ -28,6 +28,10 @@ Choose one of the following:
   Prebuilt binaries will be published on the project’s Releases page.  
   Link: `https://github.com/AngeloR/outliner/releases`
 
+  macOS builds are for Apple Silicon (M1 and newer) only. Intel Macs aren't supported.
+  The app is ad-hoc signed but not notarized, so the first time you open it macOS will say it can't verify the developer.
+  Right-click the app and choose **Open**, or go to **System Settings → Privacy & Security → Open Anyway**.
+
 - **Option B — Build from source**  
   See Prerequisites, then:
 
@@ -63,6 +67,7 @@ Helpful links:
   npm run build           # bundle frontend
   npm run tauri build     # produce a signed, distributable app in src-tauri/target
   ```
+  On an Apple Silicon Mac this produces a native arm64 build.
 - **Web (serve the static UI for quick testing):**
   ```bash
   npm run build           # bundle frontend to public/assets
